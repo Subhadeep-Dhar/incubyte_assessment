@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import mongoose from 'mongoose';
-import { VEHICLE_CATEGORIES } from '../../models/vehicle.model';
+import { VEHICLE_CATEGORIES } from '../../models/vehicle.model.js';
 
 export const catalogQuerySchema = z.object({
   page: z.coerce

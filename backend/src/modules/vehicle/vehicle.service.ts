@@ -1,14 +1,14 @@
 import mongoose from 'mongoose';
-import { Vehicle, IVehicle } from '../../models/vehicle.model';
-import { Purchase, IPurchase } from '../../models/purchase.model';
-import { escapeRegex } from '../../utils/regex.util';
-import { NotFoundError, ConflictError } from '../../utils/errors';
+import { Vehicle, IVehicle } from '../../models/vehicle.model.js';
+import { Purchase, IPurchase } from '../../models/purchase.model.js';
+import { escapeRegex } from '../../utils/regex.util.js';
+import { NotFoundError, ConflictError } from '../../utils/errors.js';
 import {
   CatalogQuery,
   SearchVehiclesQuery,
   CreateVehicleInput,
   UpdateVehicleInput,
-} from './vehicle.schema';
+} from './vehicle.schema.js';
 
 export interface PaginationMeta {
   page: number;

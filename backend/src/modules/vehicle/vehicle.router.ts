@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { vehicleController } from './vehicle.controller';
-import { validateRequest } from '../../middleware/validate.middleware';
-import { authenticateJwt, requireRole } from '../../middleware/auth.middleware';
+import { vehicleController } from './vehicle.controller.js';
+import { validateRequest } from '../../middleware/validate.middleware.js';
+import { authenticateJwt, requireRole } from '../../middleware/auth.middleware.js';
 import {
   catalogQuerySchema,
   searchVehiclesQuerySchema,
@@ -9,7 +9,7 @@ import {
   updateVehicleSchema,
   vehicleIdParamSchema,
   restockVehicleSchema,
-} from './vehicle.schema';
+} from './vehicle.schema.js';
 
 const router = Router();
 

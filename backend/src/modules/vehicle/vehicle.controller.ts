@@ -1,12 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { vehicleService } from './vehicle.service';
+import { vehicleService } from './vehicle.service.js';
 import {
   CatalogQuery,
   SearchVehiclesQuery,
   CreateVehicleInput,
   UpdateVehicleInput,
   RestockVehicleInput,
-} from './vehicle.schema';
+} from './vehicle.schema.js';
 
 export class VehicleController {
   async getCatalog(
@@ -53,7 +53,7 @@ export class VehicleController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const vehicle = await vehicleService.getVehicleById(id);
 
       res.status(200).json({
@@ -89,7 +89,7 @@ export class VehicleController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const data = req.body as UpdateVehicleInput;
       const updated = await vehicleService.updateVehicle(id, data);
 
@@ -108,7 +108,7 @@ export class VehicleController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       await vehicleService.deleteVehicle(id);
 
       res.status(200).json({
@@ -126,7 +126,7 @@ export class VehicleController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const userId = req.user!.id;
 
       const result = await vehicleService.purchaseVehicle(id, userId);
@@ -146,7 +146,7 @@ export class VehicleController {
     next: NextFunction,
   ): Promise<void> {
     try {
-      const { id } = req.params;
+      const id = req.params.id as string;
       const { quantity } = req.body as RestockVehicleInput;
 
       const updated = await vehicleService.restockVehicle(id, quantity);

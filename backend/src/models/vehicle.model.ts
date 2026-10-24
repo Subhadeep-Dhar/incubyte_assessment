@@ -1,4 +1,4 @@
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 export const VEHICLE_CATEGORIES = [
   'Sedan',
@@ -13,7 +13,8 @@ export const VEHICLE_CATEGORIES = [
 
 export type VehicleCategory = (typeof VEHICLE_CATEGORIES)[number];
 
-export interface IVehicle extends Document {
+export interface IVehicle {
+  _id: mongoose.Types.ObjectId;
   make: string;
   model: string;
   category: VehicleCategory;
