@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Vehicle } from '../../types/api';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { formatPrice } from './VehicleCard';
+import { formatPrice } from '../../utils/format';
 
 export interface VehicleDetailModalProps {
   vehicle: Vehicle | null;
@@ -26,7 +26,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
   const isLowStock = vehicle.quantityInStock > 0 && vehicle.quantityInStock <= 2;
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog.Root open={isOpen} onOpenChange={open => !open && onClose()}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-charcoal-primary/40 backdrop-blur-xs z-50 transition-opacity animate-in fade-in" />
         <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-lg bg-white rounded-xl border border-surface-border p-6 shadow-xl z-50 focus:outline-none animate-in fade-in zoom-in-95">

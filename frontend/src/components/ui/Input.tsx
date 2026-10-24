@@ -36,7 +36,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               error
                 ? 'border-rose-500 focus-visible:ring-rose-500'
                 : 'border-surface-border hover:border-charcoal-muted focus-visible:ring-forest-700',
-              disabled && 'bg-surface-muted text-charcoal-muted cursor-not-allowed border-surface-border',
+              disabled &&
+                'bg-surface-muted text-charcoal-muted cursor-not-allowed border-surface-border',
               className,
             ),
           )}
@@ -47,9 +48,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {error}
           </p>
         )}
-        {!error && helperText && (
-          <p className="text-xs text-charcoal-secondary">{helperText}</p>
-        )}
+        {!error && helperText && <p className="text-xs text-charcoal-secondary">{helperText}</p>}
       </div>
     );
   },

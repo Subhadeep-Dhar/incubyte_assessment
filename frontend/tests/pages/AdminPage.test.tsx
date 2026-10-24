@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { AdminPage } from '../../src/pages/AdminPage';
 import { apiClient, ApiClientError } from '../../src/api/client';
@@ -71,7 +70,9 @@ describe('AdminPage (Administrative Inventory Management Integration Tests)', ()
       </MemoryRouter>,
     );
 
-    expect(screen.getByTestId('admin-heading')).toHaveTextContent(/inventory operations|fleet ledger/i);
+    expect(screen.getByTestId('admin-heading')).toHaveTextContent(
+      /inventory operations|fleet ledger/i,
+    );
     expect(await screen.findByText('BMW M3 Competition')).toBeInTheDocument();
     expect(screen.getByText('Tesla Model S Plaid')).toBeInTheDocument();
     expect(screen.getByText('$85,000')).toBeInTheDocument();
@@ -220,10 +221,9 @@ describe('AdminPage (Administrative Inventory Management Integration Tests)', ()
     fireEvent.click(confirmBtn);
 
     await waitFor(() => {
-      expect(apiClient.post).toHaveBeenCalledWith(
-        '/vehicles/507f1f77bcf86cd799439012/restock',
-        { quantity: 5 },
-      );
+      expect(apiClient.post).toHaveBeenCalledWith('/vehicles/507f1f77bcf86cd799439012/restock', {
+        quantity: 5,
+      });
     });
 
     expect(await screen.findByText(/successfully restocked/i)).toBeInTheDocument();
@@ -252,7 +252,9 @@ describe('AdminPage (Administrative Inventory Management Integration Tests)', ()
 
     // Confirmation modal should be visible
     expect(screen.getByRole('heading', { name: /delete vehicle/i })).toBeInTheDocument();
-    expect(screen.getByText(/are you sure you want to delete bmw m3 competition/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/are you sure you want to delete bmw m3 competition/i),
+    ).toBeInTheDocument();
 
     const confirmDeleteBtn = screen.getByRole('button', { name: /confirm delete|delete vehicle/i });
     fireEvent.click(confirmDeleteBtn);

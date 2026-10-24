@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { VehicleDetailModal } from '../../src/components/catalog/VehicleDetailModal';
 import { Vehicle } from '../../src/types/api';
 
@@ -13,7 +12,8 @@ describe('VehicleDetailModal Component (Modal & Specs View Test)', () => {
     category: 'Coupe',
     price: 190000,
     quantityInStock: 2,
-    description: 'Bespoke hand-crafted British sports car with twin-turbocharged 4.0-litre V8 engine.',
+    description:
+      'Bespoke hand-crafted British sports car with twin-turbocharged 4.0-litre V8 engine.',
     createdAt: '',
     updatedAt: '',
   };
@@ -32,9 +32,7 @@ describe('VehicleDetailModal Component (Modal & Specs View Test)', () => {
     expect(screen.getByText(/aston martin vantage/i)).toBeInTheDocument();
     expect(screen.getByText('2024')).toBeInTheDocument();
     expect(screen.getByText('$190,000')).toBeInTheDocument();
-    expect(
-      screen.getByText(/twin-turbocharged 4\.0-litre v8/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/twin-turbocharged 4\.0-litre v8/i)).toBeInTheDocument();
     expect(screen.getByText(/low stock \(2 units\)/i)).toBeInTheDocument();
   });
 

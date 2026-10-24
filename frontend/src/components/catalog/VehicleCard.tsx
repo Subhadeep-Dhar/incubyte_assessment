@@ -10,13 +10,7 @@ export interface VehicleCardProps {
   isPurchasing?: boolean;
 }
 
-export const formatPrice = (price: number): string => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(price);
-};
+import { formatPrice } from '../../utils/format';
 
 export const VehicleCard: React.FC<VehicleCardProps> = ({
   vehicle,

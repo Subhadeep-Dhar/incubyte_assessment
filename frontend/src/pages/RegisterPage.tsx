@@ -40,11 +40,7 @@ export const RegisterPage: React.FC = () => {
       errs.password = 'Password is required';
     } else if (password.length < 8) {
       errs.password = 'Password must be at least 8 characters';
-    } else if (
-      !/[A-Z]/.test(password) ||
-      !/[a-z]/.test(password) ||
-      !/[0-9]/.test(password)
-    ) {
+    } else if (!/[A-Z]/.test(password) || !/[a-z]/.test(password) || !/[0-9]/.test(password)) {
       errs.password =
         'Password must contain at least one uppercase letter, one lowercase letter, and one number';
     }
@@ -102,7 +98,7 @@ export const RegisterPage: React.FC = () => {
             type="text"
             autoComplete="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={e => setName(e.target.value)}
             error={errors.name}
             placeholder="e.g. Eleanor Vance"
           />
@@ -113,7 +109,7 @@ export const RegisterPage: React.FC = () => {
             type="email"
             autoComplete="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={e => setEmail(e.target.value)}
             error={errors.email}
             placeholder="e.g. eleanor@example.com"
           />
@@ -124,18 +120,13 @@ export const RegisterPage: React.FC = () => {
             type="password"
             autoComplete="new-password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={e => setPassword(e.target.value)}
             error={errors.password}
             helperText="Minimum 8 characters with at least one uppercase, lowercase, and number"
             placeholder="••••••••"
           />
 
-          <Button
-            type="submit"
-            className="w-full mt-2"
-            size="md"
-            loading={isSubmitting}
-          >
+          <Button type="submit" className="w-full mt-2" size="md" loading={isSubmitting}>
             Create Account
           </Button>
         </form>

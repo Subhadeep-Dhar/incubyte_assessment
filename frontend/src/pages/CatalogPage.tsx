@@ -46,9 +46,9 @@ export const CatalogPage: React.FC = () => {
 
       const hasActiveFilters = Boolean(
         activeFilters.keyword.trim() ||
-          activeFilters.category ||
-          activeFilters.minPrice ||
-          activeFilters.maxPrice,
+        activeFilters.category ||
+        activeFilters.minPrice ||
+        activeFilters.maxPrice,
       );
 
       try {
@@ -150,8 +150,8 @@ export const CatalogPage: React.FC = () => {
       );
 
       // Decrement stock in local state
-      setVehicles((prev) =>
-        prev.map((v) =>
+      setVehicles(prev =>
+        prev.map(v =>
           v._id === vehicle._id
             ? { ...v, quantityInStock: response.vehicle?.quantityInStock ?? v.quantityInStock - 1 }
             : v,
@@ -160,9 +160,12 @@ export const CatalogPage: React.FC = () => {
 
       // If the modal was viewing this vehicle, update its state
       if (selectedVehicle?._id === vehicle._id) {
-        setSelectedVehicle((prev) =>
+        setSelectedVehicle(prev =>
           prev
-            ? { ...prev, quantityInStock: response.vehicle?.quantityInStock ?? prev.quantityInStock - 1 }
+            ? {
+                ...prev,
+                quantityInStock: response.vehicle?.quantityInStock ?? prev.quantityInStock - 1,
+              }
             : null,
         );
       }
@@ -198,12 +201,14 @@ export const CatalogPage: React.FC = () => {
                 Exclusive Vehicle Inventory
               </h1>
               <p className="text-sm text-charcoal-secondary mt-1 max-w-2xl">
-                Explore our precision-engineered luxury and performance vehicles with real-time stock
-                transparency.
+                Explore our precision-engineered luxury and performance vehicles with real-time
+                stock transparency.
               </p>
             </div>
             <div className="text-right hidden sm:block">
-              <span className="text-xs font-medium text-charcoal-muted block">Available Inventory</span>
+              <span className="text-xs font-medium text-charcoal-muted block">
+                Available Inventory
+              </span>
               <span className="text-2xl font-bold font-mono text-charcoal-primary">
                 {pagination.total} Units
               </span>
@@ -264,7 +269,7 @@ export const CatalogPage: React.FC = () => {
                 variant="outline"
                 size="sm"
                 disabled={currentPage <= 1}
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               >
                 Previous
               </Button>
@@ -272,7 +277,7 @@ export const CatalogPage: React.FC = () => {
                 variant="outline"
                 size="sm"
                 disabled={currentPage >= pagination.totalPages}
-                onClick={() => setCurrentPage((p) => Math.min(pagination.totalPages, p + 1))}
+                onClick={() => setCurrentPage(p => Math.min(pagination.totalPages, p + 1))}
               >
                 Next
               </Button>

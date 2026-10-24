@@ -23,10 +23,7 @@ export const Badge: React.FC<BadgeProps> = ({
   };
 
   return (
-    <span
-      className={twMerge(clsx(baseStyles, variants[variant], className))}
-      {...props}
-    >
+    <span className={twMerge(clsx(baseStyles, variants[variant], className))} {...props}>
       {children}
     </span>
   );

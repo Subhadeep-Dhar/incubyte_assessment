@@ -6,7 +6,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Alert } from '../components/ui/Alert';
-import { formatPrice } from '../components/catalog/VehicleCard';
+import { formatPrice } from '../utils/format';
 
 export const AdminPage: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -111,7 +111,12 @@ export const AdminPage: React.FC = () => {
     }
 
     const qtyNum = Number(formValues.quantityInStock);
-    if (formValues.quantityInStock === '' || isNaN(qtyNum) || qtyNum < 0 || !Number.isInteger(qtyNum)) {
+    if (
+      formValues.quantityInStock === '' ||
+      isNaN(qtyNum) ||
+      qtyNum < 0 ||
+      !Number.isInteger(qtyNum)
+    ) {
       errors.quantityInStock = 'Quantity in stock must be a non-negative integer';
     }
 
@@ -153,14 +158,14 @@ export const AdminPage: React.FC = () => {
           payload,
         );
         const updated = (response as { data?: Vehicle })?.data || (response as Vehicle);
-        setVehicles((prev) =>
-          prev.map((v) => (v._id === editingVehicle._id ? { ...v, ...updated } : v)),
+        setVehicles(prev =>
+          prev.map(v => (v._id === editingVehicle._id ? { ...v, ...updated } : v)),
         );
         setSuccessMessage(`Vehicle updated successfully: ${payload.make} ${payload.model}.`);
       } else {
         const response = await apiClient.post<{ data: Vehicle } | Vehicle>('/vehicles', payload);
         const created = (response as { data?: Vehicle })?.data || (response as Vehicle);
-        setVehicles((prev) => [created, ...prev]);
+        setVehicles(prev => [created, ...prev]);
         setSuccessMessage(`Vehicle created successfully: ${payload.make} ${payload.model}.`);
       }
       setIsFormModalOpen(false);
@@ -203,8 +208,8 @@ export const AdminPage: React.FC = () => {
         { quantity: qty },
       );
       const updated = (response as { data?: Vehicle })?.data || (response as Vehicle);
-      setVehicles((prev) =>
-        prev.map((v) =>
+      setVehicles(prev =>
+        prev.map(v =>
           v._id === restockVehicle._id
             ? { ...v, quantityInStock: updated.quantityInStock ?? v.quantityInStock + qty }
             : v,
@@ -241,7 +246,7 @@ export const AdminPage: React.FC = () => {
 
     try {
       await apiClient.delete(`/vehicles/${vehicleToDelete._id}`);
-      setVehicles((prev) => prev.filter((v) => v._id !== vehicleToDelete._id));
+      setVehicles(prev => prev.filter(v => v._id !== vehicleToDelete._id));
       setSuccessMessage(
         `Vehicle deleted successfully: ${vehicleToDelete.make} ${vehicleToDelete.model}.`,
       );
@@ -273,7 +278,8 @@ export const AdminPage: React.FC = () => {
               Inventory Operations & Fleet Ledger
             </h1>
             <p className="text-sm text-charcoal-secondary mt-1">
-              Authorized interface for vehicle provisioning, pricing adjustments, and inventory replenishment.
+              Authorized interface for vehicle provisioning, pricing adjustments, and inventory
+              replenishment.
             </p>
           </div>
 
@@ -310,11 +316,21 @@ export const AdminPage: React.FC = () => {
             <table className="w-full text-left text-sm text-charcoal-primary">
               <thead className="bg-surface-muted border-b border-surface-border text-xs uppercase font-semibold tracking-wider text-charcoal-secondary">
                 <tr>
-                  <th scope="col" className="px-6 py-4">Vehicle</th>
-                  <th scope="col" className="px-6 py-4">Category</th>
-                  <th scope="col" className="px-6 py-4">Price</th>
-                  <th scope="col" className="px-6 py-4">Stock Status</th>
-                  <th scope="col" className="px-6 py-4 text-right">Actions</th>
+                  <th scope="col" className="px-6 py-4">
+                    Vehicle
+                  </th>
+                  <th scope="col" className="px-6 py-4">
+                    Category
+                  </th>
+                  <th scope="col" className="px-6 py-4">
+                    Price
+                  </th>
+                  <th scope="col" className="px-6 py-4">
+                    Stock Status
+                  </th>
+                  <th scope="col" className="px-6 py-4 text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-surface-border">
@@ -327,11 +343,12 @@ export const AdminPage: React.FC = () => {
                 ) : vehicles.length === 0 ? (
                   <tr>
                     <td colSpan={5} className="px-6 py-12 text-center text-charcoal-muted">
-                      No vehicles found in ledger. Click &ldquo;+ Add New Vehicle&rdquo; to provision inventory.
+                      No vehicles found in ledger. Click &ldquo;+ Add New Vehicle&rdquo; to
+                      provision inventory.
                     </td>
                   </tr>
                 ) : (
-                  vehicles.map((v) => (
+                  vehicles.map(v => (
                     <tr key={v._id} className="hover:bg-surface-muted/50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="font-bold text-charcoal-primary">
@@ -346,9 +363,7 @@ export const AdminPage: React.FC = () => {
                           {v.category}
                         </span>
                       </td>
-                      <td className="px-6 py-4 font-mono font-bold">
-                        {formatPrice(v.price)}
-                      </td>
+                      <td className="px-6 py-4 font-mono font-bold">{formatPrice(v.price)}</td>
                       <td className="px-6 py-4">
                         {v.quantityInStock === 0 ? (
                           <Badge variant="out-of-stock">Out of Stock</Badge>
@@ -423,7 +438,7 @@ export const AdminPage: React.FC = () => {
                     label="Vehicle Make"
                     id="make"
                     value={formValues.make}
-                    onChange={(e) => setFormValues({ ...formValues, make: e.target.value })}
+                    onChange={e => setFormValues({ ...formValues, make: e.target.value })}
                     error={formErrors.make}
                     placeholder="e.g. Porsche"
                     required
@@ -432,7 +447,7 @@ export const AdminPage: React.FC = () => {
                     label="Vehicle Model"
                     id="model"
                     value={formValues.model}
-                    onChange={(e) => setFormValues({ ...formValues, model: e.target.value })}
+                    onChange={e => setFormValues({ ...formValues, model: e.target.value })}
                     error={formErrors.model}
                     placeholder="e.g. 911 GT3"
                     required
@@ -441,17 +456,20 @@ export const AdminPage: React.FC = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="space-y-1.5">
-                    <label htmlFor="category" className="block text-xs font-semibold uppercase tracking-wide text-charcoal-primary">
+                    <label
+                      htmlFor="category"
+                      className="block text-xs font-semibold uppercase tracking-wide text-charcoal-primary"
+                    >
                       Category
                     </label>
                     <select
                       id="category"
                       aria-label="Category"
                       value={formValues.category}
-                      onChange={(e) => setFormValues({ ...formValues, category: e.target.value })}
+                      onChange={e => setFormValues({ ...formValues, category: e.target.value })}
                       className="w-full px-3.5 py-2 text-sm rounded-md border border-surface-border bg-white text-charcoal-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
                     >
-                      {VEHICLE_CATEGORIES.map((cat) => (
+                      {VEHICLE_CATEGORIES.map(cat => (
                         <option key={cat} value={cat}>
                           {cat}
                         </option>
@@ -465,7 +483,7 @@ export const AdminPage: React.FC = () => {
                     type="number"
                     min="1900"
                     value={formValues.year}
-                    onChange={(e) => setFormValues({ ...formValues, year: e.target.value })}
+                    onChange={e => setFormValues({ ...formValues, year: e.target.value })}
                     error={formErrors.year}
                   />
 
@@ -475,7 +493,7 @@ export const AdminPage: React.FC = () => {
                     type="number"
                     min="1"
                     value={formValues.price}
-                    onChange={(e) => setFormValues({ ...formValues, price: e.target.value })}
+                    onChange={e => setFormValues({ ...formValues, price: e.target.value })}
                     error={formErrors.price}
                     placeholder="e.g. 175000"
                     required
@@ -488,20 +506,23 @@ export const AdminPage: React.FC = () => {
                   type="number"
                   min="0"
                   value={formValues.quantityInStock}
-                  onChange={(e) => setFormValues({ ...formValues, quantityInStock: e.target.value })}
+                  onChange={e => setFormValues({ ...formValues, quantityInStock: e.target.value })}
                   error={formErrors.quantityInStock}
                   required
                 />
 
                 <div className="space-y-1.5">
-                  <label htmlFor="description" className="block text-xs font-semibold uppercase tracking-wide text-charcoal-primary">
+                  <label
+                    htmlFor="description"
+                    className="block text-xs font-semibold uppercase tracking-wide text-charcoal-primary"
+                  >
                     Vehicle Description
                   </label>
                   <textarea
                     id="description"
                     rows={3}
                     value={formValues.description}
-                    onChange={(e) => setFormValues({ ...formValues, description: e.target.value })}
+                    onChange={e => setFormValues({ ...formValues, description: e.target.value })}
                     placeholder="Provide performance details, optional packages, or luxury amenities..."
                     className="w-full px-3.5 py-2 text-sm rounded-md border border-surface-border bg-white text-charcoal-primary placeholder:text-charcoal-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
                   />
@@ -511,7 +532,7 @@ export const AdminPage: React.FC = () => {
                   label="Image Asset URL"
                   id="imageUrl"
                   value={formValues.imageUrl}
-                  onChange={(e) => setFormValues({ ...formValues, imageUrl: e.target.value })}
+                  onChange={e => setFormValues({ ...formValues, imageUrl: e.target.value })}
                   placeholder="https://..."
                 />
 
@@ -521,12 +542,7 @@ export const AdminPage: React.FC = () => {
                       Cancel
                     </Button>
                   </Dialog.Close>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="md"
-                    loading={isSubmittingForm}
-                  >
+                  <Button type="submit" variant="primary" size="md" loading={isSubmittingForm}>
                     {editingVehicle ? 'Save Changes' : 'Create Vehicle'}
                   </Button>
                 </div>
@@ -545,7 +561,8 @@ export const AdminPage: React.FC = () => {
                   Restock Inventory
                 </Dialog.Title>
                 <Dialog.Description className="text-xs text-charcoal-secondary mt-1">
-                  Replenish active inventory for {restockVehicle?.make} {restockVehicle?.model}. Current stock: {restockVehicle?.quantityInStock} units.
+                  Replenish active inventory for {restockVehicle?.make} {restockVehicle?.model}.
+                  Current stock: {restockVehicle?.quantityInStock} units.
                 </Dialog.Description>
               </div>
 
@@ -557,7 +574,7 @@ export const AdminPage: React.FC = () => {
                   min="1"
                   max="10000"
                   value={restockQuantity}
-                  onChange={(e) => setRestockQuantity(e.target.value)}
+                  onChange={e => setRestockQuantity(e.target.value)}
                   placeholder="e.g. 5"
                   required
                 />
@@ -568,12 +585,7 @@ export const AdminPage: React.FC = () => {
                       Cancel
                     </Button>
                   </Dialog.Close>
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="md"
-                    loading={isSubmittingRestock}
-                  >
+                  <Button type="submit" variant="primary" size="md" loading={isSubmittingRestock}>
                     Confirm Restock
                   </Button>
                 </div>
@@ -592,7 +604,9 @@ export const AdminPage: React.FC = () => {
                   Delete Vehicle
                 </Dialog.Title>
                 <Dialog.Description className="text-xs text-charcoal-secondary mt-2 leading-relaxed">
-                  Are you sure you want to delete {vehicleToDelete?.make} {vehicleToDelete?.model}? This action cannot be undone and will permanently remove this record from the catalog.
+                  Are you sure you want to delete {vehicleToDelete?.make} {vehicleToDelete?.model}?
+                  This action cannot be undone and will permanently remove this record from the
+                  catalog.
                 </Dialog.Description>
               </div>
 

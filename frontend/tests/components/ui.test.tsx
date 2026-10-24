@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { Button } from '../../src/components/ui/Button';
 import { Badge } from '../../src/components/ui/Badge';
 import { Alert } from '../../src/components/ui/Alert';
@@ -73,7 +72,11 @@ describe('Shared UI Primitives (Component Tests)', () => {
 
   describe('Alert Component', () => {
     it('renders error alert with role="alert" and descriptive text', () => {
-      render(<Alert variant="error" title="Purchase Failed">Insufficient stock available.</Alert>);
+      render(
+        <Alert variant="error" title="Purchase Failed">
+          Insufficient stock available.
+        </Alert>,
+      );
       const alert = screen.getByRole('alert');
       expect(alert).toBeInTheDocument();
       expect(screen.getByText(/purchase failed/i)).toBeInTheDocument();
@@ -81,7 +84,11 @@ describe('Shared UI Primitives (Component Tests)', () => {
     });
 
     it('renders success alert with positive feedback style', () => {
-      render(<Alert variant="success" title="Purchase Complete">Order #123 confirmed.</Alert>);
+      render(
+        <Alert variant="success" title="Purchase Complete">
+          Order #123 confirmed.
+        </Alert>,
+      );
       const alert = screen.getByRole('alert');
       expect(alert).toBeInTheDocument();
       expect(screen.getByText(/order #123 confirmed/i)).toBeInTheDocument();
@@ -97,13 +104,7 @@ describe('Shared UI Primitives (Component Tests)', () => {
     });
 
     it('displays validation error message with aria-invalid="true"', () => {
-      render(
-        <Input
-          label="Price"
-          id="price-input"
-          error="Price must be a positive number"
-        />,
-      );
+      render(<Input label="Price" id="price-input" error="Price must be a positive number" />);
       const input = screen.getByLabelText(/price/i);
       expect(input).toHaveAttribute('aria-invalid', 'true');
       expect(screen.getByText(/price must be a positive number/i)).toBeInTheDocument();

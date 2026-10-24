@@ -108,7 +108,10 @@ export const apiClient = {
   async getPaginated<T>(
     endpoint: string,
     options?: RequestOptions,
-  ): Promise<{ data: T[]; pagination: { page: number; limit: number; total: number; totalPages: number } }> {
+  ): Promise<{
+    data: T[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }> {
     const envelope = await request<PaginatedResponse<T>>('GET', endpoint, undefined, {
       ...options,
       rawEnvelope: true,

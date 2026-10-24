@@ -82,7 +82,7 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             className="w-full px-3.5 py-2 text-sm rounded-md border border-surface-border bg-white text-charcoal-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 transition-colors"
           >
             <option value="">All Categories</option>
-            {VEHICLE_CATEGORIES.map((cat) => (
+            {VEHICLE_CATEGORIES.map(cat => (
               <option key={cat} value={cat}>
                 {cat}
               </option>

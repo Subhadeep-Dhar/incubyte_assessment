@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { SearchFilterBar, FilterState } from '../../src/components/catalog/SearchFilterBar';
 
 describe('SearchFilterBar Component (Filter & Search Controls Test)', () => {
@@ -12,13 +11,7 @@ describe('SearchFilterBar Component (Filter & Search Controls Test)', () => {
   };
 
   it('renders search input, category dropdown, price inputs, and reset button', () => {
-    render(
-      <SearchFilterBar
-        filters={initialFilters}
-        onFilterChange={vi.fn()}
-        onReset={vi.fn()}
-      />,
-    );
+    render(<SearchFilterBar filters={initialFilters} onFilterChange={vi.fn()} onReset={vi.fn()} />);
 
     expect(screen.getByPlaceholderText(/search make or model/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/category/i)).toBeInTheDocument();
@@ -40,9 +33,7 @@ describe('SearchFilterBar Component (Filter & Search Controls Test)', () => {
     const searchInput = screen.getByPlaceholderText(/search make or model/i);
     fireEvent.change(searchInput, { target: { value: 'BMW' } });
 
-    expect(handleFilterChange).toHaveBeenCalledWith(
-      expect.objectContaining({ keyword: 'BMW' }),
-    );
+    expect(handleFilterChange).toHaveBeenCalledWith(expect.objectContaining({ keyword: 'BMW' }));
   });
 
   it('fires onFilterChange when category is selected', () => {
@@ -58,9 +49,7 @@ describe('SearchFilterBar Component (Filter & Search Controls Test)', () => {
     const categorySelect = screen.getByLabelText(/category/i);
     fireEvent.change(categorySelect, { target: { value: 'SUV' } });
 
-    expect(handleFilterChange).toHaveBeenCalledWith(
-      expect.objectContaining({ category: 'SUV' }),
-    );
+    expect(handleFilterChange).toHaveBeenCalledWith(expect.objectContaining({ category: 'SUV' }));
   });
 
   it('displays validation message when min price exceeds max price', () => {
@@ -72,11 +61,7 @@ describe('SearchFilterBar Component (Filter & Search Controls Test)', () => {
     };
 
     render(
-      <SearchFilterBar
-        filters={invalidPriceFilters}
-        onFilterChange={vi.fn()}
-        onReset={vi.fn()}
-      />,
+      <SearchFilterBar filters={invalidPriceFilters} onFilterChange={vi.fn()} onReset={vi.fn()} />,
     );
 
     expect(screen.getByText(/min price cannot exceed max price/i)).toBeInTheDocument();

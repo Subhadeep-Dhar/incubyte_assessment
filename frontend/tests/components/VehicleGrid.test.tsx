@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { VehicleGrid } from '../../src/components/catalog/VehicleGrid';
 import { Vehicle } from '../../src/types/api';
 

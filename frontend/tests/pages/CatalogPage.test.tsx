@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { CatalogPage } from '../../src/pages/CatalogPage';
 import { apiClient, ApiClientError } from '../../src/api/client';
@@ -187,8 +186,6 @@ describe('CatalogPage (Catalog, Search & Purchasing Flow Integration Test)', () 
     const purchaseButtons = screen.getAllByRole('button', { name: /purchase vehicle/i });
     fireEvent.click(purchaseButtons[0]);
 
-    expect(
-      await screen.findByText(/the requested vehicle is out of stock/i),
-    ).toBeInTheDocument();
+    expect(await screen.findByText(/the requested vehicle is out of stock/i)).toBeInTheDocument();
   });
 });

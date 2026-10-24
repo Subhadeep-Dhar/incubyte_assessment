@@ -62,12 +62,7 @@ export const Navbar: React.FC = () => {
                   </span>
                 )}
               </span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={logout}
-                className="text-xs"
-              >
+              <Button variant="outline" size="sm" onClick={logout} className="text-xs">
                 Sign Out
               </Button>
             </div>

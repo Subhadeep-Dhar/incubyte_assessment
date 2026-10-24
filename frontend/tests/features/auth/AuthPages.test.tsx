@@ -1,11 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import React from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { LoginPage } from '../../../src/pages/LoginPage';
 import { RegisterPage } from '../../../src/pages/RegisterPage';
 import { ProtectedRoute, AdminRoute } from '../../../src/components/auth/RouteGuards';
-import { AuthProvider, AuthContextType, useAuth } from '../../../src/context/AuthContext';
+import { useAuth } from '../../../src/context/AuthContext';
 import { ApiClientError } from '../../../src/api/client';
 
 // Mock useAuth for fine-grained page tests
@@ -158,7 +157,9 @@ describe('Authentication Pages & Route Guards (Component & Flow Tests)', () => {
 
       expect(mockRegister).not.toHaveBeenCalled();
       expect(
-        await screen.findByText(/at least one uppercase letter, one lowercase letter, and one number/i),
+        await screen.findByText(
+          /at least one uppercase letter, one lowercase letter, and one number/i,
+        ),
       ).toBeInTheDocument();
     });
 
@@ -183,11 +184,7 @@ describe('Authentication Pages & Route Guards (Component & Flow Tests)', () => {
       fireEvent.click(screen.getByRole('button', { name: /create account/i }));
 
       await waitFor(() => {
-        expect(mockRegister).toHaveBeenCalledWith(
-          'Bob Smith',
-          'bob@example.com',
-          'SecurePass123',
-        );
+        expect(mockRegister).toHaveBeenCalledWith('Bob Smith', 'bob@example.com', 'SecurePass123');
       });
     });
 
