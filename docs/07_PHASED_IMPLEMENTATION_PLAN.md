@@ -104,26 +104,27 @@ gantt
 
 ---
 
-### Phase 04: Frontend Application, Design System & User Flows (Frontend TDD)
+### Phase 04: Frontend Application, Design System & User Flows (Frontend TDD) — COMPLETED
 
 - **Objective:** Build the responsive React SPA featuring editorial vehicle cards, dynamic search/filter, purchase interaction, disabled zero-stock states, and admin portal.
 - **Tasks:**
-  1. Set up design tokens, Tailwind configuration, and base Radix UI primitives.
-  2. _Test First:_ Write RTL component tests for `VehicleCard` (renders metadata, badges, price, and disabled purchase button when `stockQuantity === 0`).
-  3. Implement `VehicleCard` component; verify GREEN.
-  4. _Test First:_ Write RTL tests for `SearchFilterBar` (query debouncing, category selection, price input validation).
-  5. Implement `SearchFilterBar` component; verify GREEN.
-  6. _Test First:_ Write RTL tests for `CatalogPage` with TanStack Query (loading skeleton, empty state, data grid).
-  7. Implement catalog page and data fetching hooks; verify GREEN.
-  8. _Test First:_ Write RTL tests for Authentication flows (Login/Register forms, token persistence, error messages).
-  9. Implement `AuthContext` and login/registration pages; verify GREEN.
-  10. _Test First:_ Write RTL tests for `AdminPortal` (inventory ledger, restock modal, create vehicle dialog, role guard).
-  11. Implement administrative management features; verify GREEN.
+  1. [x] Set up design tokens, Tailwind configuration, shared UI primitives (`Button`, `Badge`, `Alert`, `Input`, `Skeleton`), and Radix UI dialog.
+  2. [x] _Test First:_ Write RTL component tests for `VehicleCard` (renders metadata, badges, price, and disabled purchase button when `quantityInStock === 0`).
+  3. [x] Implement `VehicleCard` component; verify GREEN.
+  4. [x] _Test First:_ Write RTL tests for `SearchFilterBar` (keyword search, category selection, price boundary validation).
+  5. [x] Implement `SearchFilterBar` component; verify GREEN.
+  6. [x] _Test First:_ Write RTL tests for `CatalogPage` (loading skeleton, empty state, data grid, specs modal, purchase flow).
+  7. [x] Implement catalog page and data fetching hooks; verify GREEN.
+  8. [x] _Test First:_ Write RTL tests for Authentication flows (Login/Register forms, token persistence, error messages, route guards).
+  9. [x] Implement `AuthContext` and login/registration pages; verify GREEN.
+  10. [x] _Test First:_ Write RTL tests for `AdminPage` (inventory ledger, restock modal, create/edit vehicle dialog, delete confirmation dialog, role guard).
+  11. [x] Implement administrative management features; verify GREEN.
+  12. [x] Full application assembly in `App.tsx` with `BrowserRouter`, `AuthProvider`, `Navbar`, and routes; verify GREEN.
 - **Exit Criteria:**
-  - 100% passing RTL test suite across all components and pages.
-  - Zero-stock button disabled state visually and programmatically proven.
-  - Accessible keyboard navigation and responsive layout verified.
-  - RTM updated for `REQ-UI-01` through `REQ-UI-06`.
+  - [x] 100% passing RTL test suite across all 12 frontend test files (71 tests).
+  - [x] Zero-stock button disabled state visually and programmatically proven.
+  - [x] Accessible keyboard navigation and responsive layout verified.
+  - [x] RTM updated for `REQ-UI-01` through `REQ-UI-06`.
 
 ---
 

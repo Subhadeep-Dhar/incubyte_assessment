@@ -218,7 +218,38 @@ The vehicle inventory domain is engineered with strict type safety, input valida
 
 ---
 
-## 9. My AI Usage & Transparency Disclosure
+## 9. Frontend Single-Page Application (Phase 04)
+
+The frontend is an editorial, responsive Single-Page Application (SPA) designed for automotive luxury and precision inventory management.
+
+### Architectural Layout & Navigation
+
+- **Showroom Catalog (`/`):** Publicly accessible vehicle showroom featuring real-time stock counters, multi-criteria filtering, and editorial cards.
+- **Customer Authentication (`/login` & `/register`):** Secure onboarding and authentication with client-side validation aligned with backend schemas.
+- **Admin Fleet Ledger (`/admin`):** Protected administrative interface for vehicle provisioning, pricing adjustments, inventory restocking, and deletion. Protected by client-side `AdminRoute` and enforced by backend JWT role verification.
+
+### Core Frontend Components & Primitives
+
+| Component            | File Path                                                | Description                                                                                                   |
+| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `VehicleCard`        | `frontend/src/components/catalog/VehicleCard.tsx`        | Editorial card presenting vehicle imagery, year/category badges, stock status, formatted price, and purchase CTA. |
+| `VehicleGrid`        | `frontend/src/components/catalog/VehicleGrid.tsx`        | Responsive layout grid with 6-skeleton loading state and contextual empty state with filter reset action.       |
+| `SearchFilterBar`    | `frontend/src/components/catalog/SearchFilterBar.tsx`    | Interactive filtering bar with make/model keyword search, category dropdown, price boundary validation, and reset. |
+| `VehicleDetailModal` | `frontend/src/components/catalog/VehicleDetailModal.tsx` | Accessible Radix UI dialog displaying full vehicle specs, performance details, and direct purchase action.       |
+| `Navbar`             | `frontend/src/components/layout/Navbar.tsx`              | Responsive navigation header with brand identity, catalog link, admin portal link (admin only), and auth actions. |
+| `AuthContext`        | `frontend/src/context/AuthContext.tsx`                   | Context provider managing JWT lifecycle, localStorage synchronization, and `/api/auth/me` identity validation. |
+| `RouteGuards`        | `frontend/src/components/auth/RouteGuards.tsx`           | `ProtectedRoute` and `AdminRoute` higher-order components preventing unauthorized access to protected views. |
+| Shared UI Primitives | `frontend/src/components/ui/*`                           | Reusable `Button`, `Badge`, `Alert`, `Input`, and `Skeleton` built with Tailwind CSS and accessible semantics. |
+
+### Zero-Stock Purchase Protection in UI
+
+- When a vehicle has `quantityInStock === 0`, `VehicleCard` and `VehicleDetailModal` render an **"Out of Stock"** rose badge and programmatically disable the purchase button (`disabled={true}` with `aria-disabled="true"`).
+- In-flight purchase requests display a loading spinner and disable duplicate clicks.
+- Real-time stock decrement updates the local vehicle card immediately after a successful server response.
+
+---
+
+## 10. My AI Usage & Transparency Disclosure
 
 In accordance with Incubyte's assessment guidelines and commitment to transparent software craftsmanship:
 
@@ -228,4 +259,5 @@ In accordance with Incubyte's assessment guidelines and commitment to transparen
    Co-authored-by: Google Antigravity <noreply@google.com>
    ```
 3. **Raw Prompts Log:** Complete, unedited transcripts of all AI interactions are preserved chronologically in [`PROMPTS.md`](./PROMPTS.md).
-4. **Human Ownership & Craftsmanship:** While AI was utilized for scaffolding, boilerplate generation, and rapid feedback loops, all architectural decisions, database models, test assertions, and security boundaries are governed by rigorous human judgment and verified through executable test suites.
+4. **Human Ownership & Craftsmanship:** While AI was utilized for scaffolding, boilerplate generation, and rapid feedback loops, all architectural decisions, database models, test assertions, security boundaries, and UI designs are governed by rigorous human judgment and verified through executable test suites.
+5. **Phase 04 Verification:** 71 frontend tests (across 12 test files) and 121 backend integration/unit tests (across 17 test files) pass 100% locally with zero errors, zero typecheck issues, and zero formatting discrepancies.

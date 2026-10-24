@@ -201,3 +201,69 @@ Do not build the finished React interface in this phase.
   - Total tests: 123/123 passed.
   - Statement coverage: 89.42% overall backend, 97.43% on `src/modules/vehicle`.
   - Zero lint, typecheck, or format errors; production build succeeded cleanly.
+
+---
+
+## Phase 04: Frontend SPA Implementation
+
+### User Request
+
+```text
+PHASE 04 — FRONTEND SPA IMPLEMENTATION
+Incubyte Software Craftsperson Intern Assessment: Car Dealership Inventory System
+
+Authorization: Explicitly approved by the project owner.
+Repository: https://github.com/Subhadeep-Dhar/incubyte_assessment
+Local workspace: C:\Users\Subhadeep Dhar\Desktop\incubyte_assessment
+Working branch: main, unless a short-lived feature branch is needed to preserve TDD history safely.
+
+Phase objective: Deliver a production-quality React single-page application for the existing vehicle inventory backend, including authentication, catalog/search, purchasing, and administrative inventory management.
+
+Execution mode: Autonomous implementation within this phase, with small reviewable increments, genuine Red–Green–Refactor TDD, verified commits, documentation updates, and GitHub synchronization.
+
+Hard boundary: Do not deploy the application. Do not start Phase 05 or introduce unrelated features. Stop after Phase 04 verification and report completion for owner review.
+[Full prompt detailed 10 sections: mandatory preflight, strict Red-Green-Refactor rules, required frontend quality & visual direction, implementation subphases 04A-04F, required test coverage, requirements traceability & documentation, continuous verification, Git & remote synchronization, scope boundaries, and final report exit criteria]
+```
+
+### Assistant Action Summary
+
+- **Pre-Flight Verification:**
+  - Audited local workspace and confirmed clean working tree at commit `698a45fb7266d8f7013c4d4e8384e10d72cbc8fb`.
+  - Verified all 6 baseline checks independently: `format:check` (0 issues), `lint` (0 errors), `typecheck` (0 errors), `test:frontend` (2/2 passing), `test:backend` (121/121 passing), and `build` (clean 2.15s).
+  - Created short-lived feature branch `feature/phase-04-frontend` to preserve granular TDD history safely.
+- **Subphase 04A (Frontend Foundation & Typed API Client):**
+  - **RED:** Added failing unit tests in `frontend/tests/api/client.test.ts` testing base URL configuration, Bearer token injection, envelope unwrapping, and structured `ApiClientError` normalization. Commit `f42a57b`.
+  - **GREEN:** Implemented typed `ApiClient` in `frontend/src/api/client.ts` and domain types in `frontend/src/types/api.ts`. Commit `103b05e`.
+  - **RED:** Added failing component tests in `frontend/tests/components/ui.test.tsx` testing shared UI primitives (`Button`, `Badge`, `Alert`, `Input`, `Skeleton`). Commit `d198900`.
+  - **GREEN:** Implemented shared UI primitives with WCAG-compliant styling, focus rings, and accessible ARIA attributes. Commit `5ff818d`.
+- **Subphase 04B (Authentication State, Forms & Route Guards):**
+  - **RED:** Added failing unit tests in `frontend/tests/context/AuthContext.test.tsx` testing session restoration, login, registration, role detection (`isAdmin`), and logout. Commit `a4b2a5c`.
+  - **GREEN:** Implemented `AuthContext` with secure `localStorage` token persistence and `/api/auth/me` identity validation. Commit `ef06a4b`.
+  - **RED:** Added failing component tests in `frontend/tests/features/auth/AuthPages.test.tsx` and `frontend/tests/components/Navbar.test.tsx` testing `LoginPage`, `RegisterPage`, `ProtectedRoute`, `AdminRoute`, and `Navbar`. Commit `88391ed`.
+  - **GREEN:** Implemented `LoginPage`, `RegisterPage`, `RouteGuards`, and `Navbar` with field validation and accessible error feedback. Commit `1551efa`.
+- **Subphase 04C & 04D (Vehicle Catalog, Search & Purchasing):**
+  - **RED:** Added failing unit tests for `VehicleCard` in `frontend/tests/components/VehicleCard.test.tsx`. Commit `2f346df`.
+  - **RED:** Added failing component tests for `SearchFilterBar` in `frontend/tests/components/SearchFilterBar.test.tsx`. Commit `2bca61a`.
+  - **GREEN:** Implemented `VehicleGrid`, `VehicleDetailModal` (Radix UI), `SearchFilterBar`, and finalized `VehicleCard` with editorial styling, stock badges, and purchase CTA. Commit `e6054f7`.
+  - **RED:** Added failing integration tests in `frontend/tests/pages/CatalogPage.test.tsx` testing catalog loading, search parameters, retry on error, and purchasing decrement. Commit `c9ef22e`.
+  - **GREEN:** Implemented `CatalogPage` with search/filtering, modal specs, and purchasing flow. Commit `ed2d36e`.
+- **Subphase 04E (Admin Inventory Management):**
+  - **RED:** Added failing integration tests in `frontend/tests/pages/AdminPage.test.tsx` testing inventory ledger rendering, vehicle creation modal, vehicle editing, stock replenishment modal, and deletion confirmation dialog. Commit `9c61559`.
+  - **GREEN:** Implemented `AdminPage` with full inventory operations, client-side validation, and confirmation dialogs. Commit `5dc7490`.
+- **Subphase 04F (Integration, Accessibility & Visual Refinement):**
+  - **RED:** Added failing integration tests in `frontend/tests/App.test.tsx` testing full journey routing, public catalog at `/`, auth pages at `/login` and `/register`, and role-guarded access at `/admin`. Commit `efac2db`.
+  - **GREEN:** Assembled full application in `frontend/src/App.tsx` with `BrowserRouter`, `AuthProvider`, `Navbar`, and routes. Commit `a60a296`.
+  - **REFACTOR:** Formatted all files with Prettier, extracted shared `formatPrice` utility in `frontend/src/utils/format.ts`, added Vite client types in `frontend/src/vite-env.d.ts`, and refined component typings. Commit `5241f63`.
+- **Traceability & Documentation:**
+  - Marked requirements `REQ-UI-01`, `REQ-UI-02`, `REQ-UI-03`, `REQ-UI-04`, `REQ-UI-05`, and `REQ-UI-06` as `VERIFIED` in `docs/02_REQUIREMENTS_TRACEABILITY_MATRIX.md`.
+  - Updated `docs/07_PHASED_IMPLEMENTATION_PLAN.md` with Phase 04 completed exit criteria.
+  - Updated `README.md` with Section 9 detailing the frontend SPA architecture, components, and zero-stock purchase behavior.
+- **Final Metrics:**
+  - Frontend test suites: 12/12 passed (71 tests total).
+  - Backend test suites: 17/17 passed (121 tests total).
+  - Total tests across repository: 192/192 passed (100% success rate).
+  - Code formatting: 100% clean Prettier check.
+  - Linter: 0 errors across backend and frontend.
+  - Typecheck: 0 errors across backend and frontend (`tsc --noEmit`).
+  - Production build: `npm run build` completed in 2.92s with optimized bundles.
+
