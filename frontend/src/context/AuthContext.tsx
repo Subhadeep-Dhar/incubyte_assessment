@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { User } from '../types/api';
+import { apiClient, setAuthToken } from '../api/client';
 
 export interface AuthContextType {
   user: User | null;
@@ -11,21 +12,80 @@ export interface AuthContextType {
   logout: () => void;
 }
 
+interface AuthResponse {
+  token: string;
+  user: User;
+}
+
+const TOKEN_STORAGE_KEY = 'auth_token';
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem(TOKEN_STORAGE_KEY);
+    setAuthToken(null);
+    setUser(null);
+  }, []);
+
+  useEffect(() => {
+    async function initSession() {
+      const storedToken = localStorage.getItem(TOKEN_STORAGE_KEY);
+      if (!storedToken) {
+        setLoading(false);
+        return;
+      }
+
+      setAuthToken(storedToken);
+      try {
+        const currentUser = await apiClient.get<User>('/auth/me');
+        setUser(currentUser);
+      } catch {
+        // Stored token is invalid or expired
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    initSession();
+  }, [logout]);
+
+  const login = useCallback(async (email: string, password: string): Promise<void> => {
+    const response = await apiClient.post<AuthResponse>('/auth/login', {
+      email,
+      password,
+    });
+    localStorage.setItem(TOKEN_STORAGE_KEY, response.token);
+    setAuthToken(response.token);
+    setUser(response.user);
+  }, []);
+
+  const register = useCallback(
+    async (name: string, email: string, password: string): Promise<void> => {
+      const response = await apiClient.post<AuthResponse>('/auth/register', {
+        name,
+        email,
+        password,
+      });
+      localStorage.setItem(TOKEN_STORAGE_KEY, response.token);
+      setAuthToken(response.token);
+      setUser(response.user);
+    },
+    [],
+  );
+
   const value: AuthContextType = {
-    user: null,
-    isAuthenticated: false,
-    isAdmin: false,
-    loading: false,
-    login: async () => {
-      throw new Error('Not implemented');
-    },
-    register: async () => {
-      throw new Error('Not implemented');
-    },
-    logout: () => {},
+    user,
+    isAuthenticated: Boolean(user),
+    isAdmin: user?.role === 'admin',
+    loading,
+    login,
+    register,
+    logout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
