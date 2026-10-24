@@ -192,7 +192,33 @@ _Configuration variables in `backend/.env`:_
 
 ---
 
-## 8. My AI Usage & Transparency Disclosure
+## 8. Vehicle Domain, Inventory API & Transaction Safety (Phase 03)
+
+The vehicle inventory domain is engineered with strict type safety, input validation via Zod, atomic concurrency control in MongoDB, and persistent purchase audit logs.
+
+### Inventory REST Endpoints
+
+| Method   | Endpoint                     | Access                           | Description                                                                              |
+| -------- | ---------------------------- | -------------------------------- | ---------------------------------------------------------------------------------------- |
+| `GET`    | `/api/vehicles`              | Public                           | Browse vehicle catalog with pagination (`page`, `limit`) and sorting. Zero-stock shown.  |
+| `GET`    | `/api/vehicles/search`       | Public                           | Search by `make`, `model`, `category`, and inclusive `minPrice` / `maxPrice` boundaries. |
+| `GET`    | `/api/vehicles/:id`          | Public                           | Retrieve detailed vehicle record by MongoDB ID.                                          |
+| `POST`   | `/api/vehicles`              | Admin Only                       | Add a new vehicle to inventory with validated pricing and non-negative stock.            |
+| `PUT`    | `/api/vehicles/:id`          | Admin Only                       | Update vehicle attributes (make, model, category, price, quantityInStock, etc.).         |
+| `DELETE` | `/api/vehicles/:id`          | Admin Only                       | Delete vehicle from catalog (retains historical purchase audit records).                 |
+| `POST`   | `/api/vehicles/:id/purchase` | Authenticated (Customer / Admin) | Atomically purchase 1 unit; prevents race-condition overselling and logs audit record.   |
+| `POST`   | `/api/vehicles/:id/restock`  | Admin Only                       | Atomically increment vehicle stock by positive integer quantity.                         |
+
+### Concurrency Control & Anti-Overselling Strategy
+
+- **Atomic Conditional Decrement:** Purchases execute via MongoDB `findOneAndUpdate` targeting `{ _id: vehicleId, quantityInStock: { $gte: 1 } }` with `$inc: { quantityInStock: -1 }`.
+- **Race Condition Immunity:** When multiple parallel requests compete for the last remaining vehicle (`quantityInStock = 1`), the database lock ensures exactly one request satisfies the `$gte: 1` condition.
+- **HTTP 409 Conflict:** Competing requests that find 0 stock receive an immediate `409 Conflict` (`INSUFFICIENT_STOCK`) without modifying database state or driving stock below zero.
+- **Audit Logging with Compensation Rollback:** Successful purchases record an immutable `Purchase` audit log with purchaser ID, vehicle ID, purchase-time price snapshot, and timestamp. If audit logging fails on standalone MongoDB instances, a compensation rollback increments stock back to its original state.
+
+---
+
+## 9. My AI Usage & Transparency Disclosure
 
 In accordance with Incubyte's assessment guidelines and commitment to transparent software craftsmanship:
 

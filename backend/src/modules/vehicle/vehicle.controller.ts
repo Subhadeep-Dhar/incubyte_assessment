@@ -9,11 +9,7 @@ import {
 } from './vehicle.schema.js';
 
 export class VehicleController {
-  async getCatalog(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async getCatalog(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const query = req.query as unknown as CatalogQuery;
       const result = await vehicleService.getCatalog(query);
@@ -28,11 +24,7 @@ export class VehicleController {
     }
   }
 
-  async searchVehicles(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async searchVehicles(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const query = req.query as unknown as SearchVehiclesQuery;
       const result = await vehicleService.searchVehicles(query);
@@ -47,11 +39,7 @@ export class VehicleController {
     }
   }
 
-  async getVehicleById(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async getVehicleById(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id as string;
       const vehicle = await vehicleService.getVehicleById(id);
@@ -65,11 +53,7 @@ export class VehicleController {
     }
   }
 
-  async createVehicle(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async createVehicle(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const data = req.body as CreateVehicleInput;
       const vehicle = await vehicleService.createVehicle(data);
@@ -83,11 +67,7 @@ export class VehicleController {
     }
   }
 
-  async updateVehicle(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async updateVehicle(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id as string;
       const data = req.body as UpdateVehicleInput;
@@ -102,11 +82,7 @@ export class VehicleController {
     }
   }
 
-  async deleteVehicle(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async deleteVehicle(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id as string;
       await vehicleService.deleteVehicle(id);
@@ -120,11 +96,7 @@ export class VehicleController {
     }
   }
 
-  async purchaseVehicle(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async purchaseVehicle(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id as string;
       const userId = req.user!.id;
@@ -140,11 +112,7 @@ export class VehicleController {
     }
   }
 
-  async restockVehicle(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> {
+  async restockVehicle(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const id = req.params.id as string;
       const { quantity } = req.body as RestockVehicleInput;

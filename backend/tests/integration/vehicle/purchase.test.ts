@@ -59,9 +59,7 @@ describe('POST /api/vehicles/:id/purchase - Vehicle Purchasing & Concurrency (In
       quantityInStock: 3,
     });
 
-    const res = await request(app)
-      .post(`/api/vehicles/${vehicle._id}/purchase`)
-      .send();
+    const res = await request(app).post(`/api/vehicles/${vehicle._id}/purchase`).send();
 
     expect(res.status).toBe(401);
     expect(res.body.success).toBe(false);
@@ -160,7 +158,7 @@ describe('POST /api/vehicles/:id/purchase - Vehicle Purchasing & Concurrency (In
       signToken({ userId: '6adcef3a243e4150eb3cad25', email: 'user5@test.com', role: 'customer' }),
     ];
 
-    const concurrentRequests = purchasers.map((token) =>
+    const concurrentRequests = purchasers.map(token =>
       request(app)
         .post(`/api/vehicles/${vehicle._id}/purchase`)
         .set('Authorization', `Bearer ${token}`)
@@ -169,8 +167,8 @@ describe('POST /api/vehicles/:id/purchase - Vehicle Purchasing & Concurrency (In
 
     const results = await Promise.all(concurrentRequests);
 
-    const successCount = results.filter((r) => r.status === 200).length;
-    const conflictCount = results.filter((r) => r.status === 409).length;
+    const successCount = results.filter(r => r.status === 200).length;
+    const conflictCount = results.filter(r => r.status === 409).length;
 
     // Exactly 2 requests must succeed, and exactly 3 must receive 409 Conflict
     expect(successCount).toBe(2);

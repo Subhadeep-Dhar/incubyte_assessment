@@ -21,11 +21,7 @@ router.get(
 );
 
 // Public catalog listing
-router.get(
-  '/',
-  validateRequest({ query: catalogQuerySchema }),
-  vehicleController.getCatalog,
-);
+router.get('/', validateRequest({ query: catalogQuerySchema }), vehicleController.getCatalog);
 
 // Public single vehicle detail
 router.get(

@@ -128,3 +128,76 @@ Implement ONLY the authentication and authorization foundation. Vehicle CRUD, pu
   - Prettier format check (`npm run format:check`): 100% compliant.
   - Production build (`npm run build`): 0 errors.
 - **Traceability Updates:** Updated `docs/02_REQUIREMENTS_TRACEABILITY_MATRIX.md` marking `REQ-AUTH-01`, `REQ-AUTH-02`, `REQ-AUTH-03`, `REQ-AUTH-04` as `VERIFIED`. Documented Phase 02 endpoints and seed CLI in `README.md`.
+
+---
+
+## Interaction 04: Phase 03 — Vehicle Domain, Inventory API & Transaction Safety
+
+### User Prompt
+
+```text
+INCUBYTE CAR DEALERSHIP — PHASE 03
+VEHICLE DOMAIN, INVENTORY API & TRANSACTION SAFETY
+Repository:
+https://github.com/Subhadeep-Dhar/incubyte_assessment
+You are continuing the existing project as a senior TypeScript backend engineer, domain-modeling specialist, security reviewer, and strict TDD practitioner.
+Phase 01 established the project foundation. Phase 02 reportedly implemented authentication, JWT verification, RBAC and administrator provisioning.
+Your task is to implement the vehicle and inventory backend domain in this phase.
+IMPORTANT: Verify the actual repository and existing authentication implementation before proceeding. Do not assume that previous completion reports are necessarily accurate.
+PHASE SCOPE
+Implement:
+Vehicle data model and validation.
+Public vehicle catalog listing.
+Vehicle search and price filtering.
+Admin-only vehicle creation.
+Admin-only vehicle updates.
+Admin-only vehicle deletion.
+Authenticated vehicle purchasing.
+Admin-only restocking.
+Purchase audit records.
+Comprehensive unit and integration tests.
+API documentation and requirements traceability.
+Do not build the finished React interface in this phase.
+[Full prompt detailed 13 sections: pre-flight audit, strict TDD rules, vehicle data model, public catalog, vehicle search, admin-only vehicle management, purchasing & inventory concurrency, admin restocking, error handling & security, testing & quality gates, documentation, Git & AI attribution, phase exit criteria, and mandatory TDD commit discipline]
+```
+
+### Assistant Action Summary
+
+- **Pre-Flight Audit:**
+  - Verified working tree, current branch, origin sync status, and existing Phase 02 baseline.
+  - Executed all existing baseline tests: 56/56 passing (54 backend, 2 frontend), 0 lint errors, 0 typecheck errors, 0 format issues.
+  - Created and checked out dedicated feature branch `feature/phase-03-vehicles`.
+- **TDD Increment 1 (Vehicle Data Model & Schema Validation):**
+  - **RED:** Added failing unit tests in `backend/tests/unit/models/vehicle.test.ts` verifying required fields (`make`, `model`, `category`, `price`, `quantityInStock`), positive price constraint, non-negative integer stock, enum categories, and clean JSON serialization. Commit `3d1ebe1`.
+  - **GREEN:** Implemented `backend/src/models/vehicle.model.ts` with Mongoose schema, custom validators, and indexes on `make`, `model`, `category`, `price`, `quantityInStock`. Commit `9c6e474`.
+  - **REFACTOR:** Synchronized model indexes in `backend/tests/setup.ts` to ensure clean index creation across test runs. Commit `72525c4`.
+- **TDD Increment 2 (Public Vehicle Catalog `GET /api/vehicles`):**
+  - **RED:** Added failing integration tests in `backend/tests/integration/vehicle/catalog.test.ts` verifying empty inventory, multiple vehicles, paginated response envelope (`data`, `pagination`), zero-stock visibility, default sorting by `createdAt: -1`, and invalid pagination parameter rejection. Commit `4f60dba`.
+  - **GREEN:** Implemented catalog service query, controller, and router in `backend/src/modules/vehicle/`. Commit `a081f67`.
+- **TDD Increment 3 (Vehicle Search & Multi-Parameter Filter `GET /api/vehicles/search`):**
+  - **RED:** Added failing integration tests in `backend/tests/integration/vehicle/search.test.ts` testing case-insensitive matching for make and model, category exact match, inclusive price bounds (`minPrice`, `maxPrice`), invalid numeric rejection (400), invalid range (`minPrice > maxPrice`) rejection, ReDoS-safe special characters, and empty search results. Commit `a965707`.
+  - **GREEN:** Implemented safe regex utility `escapeRegex` in `backend/src/utils/regex.util.ts`, search query Zod schema with `.refine()` boundary validation, and compound query builder in `vehicle.service.ts`. Commit `4f8738b`.
+  - **REFACTOR:** Added dedicated unit tests for `escapeRegex` in `backend/tests/unit/utils/regex.test.ts`. Commit `f7f968f`.
+- **TDD Increment 4 (Admin-Only Vehicle CRUD `POST`, `PUT`, `DELETE /api/vehicles`):**
+  - **RED:** Added failing integration tests in `backend/tests/integration/vehicle/admin-crud.test.ts` testing admin creation (201), unauthenticated rejection (401), customer forbidden (403), schema validation failure (400), admin update (200), non-existent vehicle (404), immutable ID protection, admin deletion (200), and malformed ObjectId rejection (400). Commit `6856dc4`.
+  - **GREEN:** Implemented vehicle creation, update, and deletion in service, controller, and router with `authenticateJwt` and `requireRole(['admin'])` middleware. Commit `13bfb18`.
+  - **REFACTOR:** Added public `GET /api/vehicles/:id` endpoint and tests in `catalog.test.ts` for detailed vehicle inspection. Commit `41f243f`.
+- **TDD Increment 5 (Authenticated Purchasing, Concurrency & Audit Logging `POST /api/vehicles/:id/purchase`):**
+  - **RED:** Added failing integration tests in `backend/tests/integration/vehicle/purchase.test.ts` testing single-unit purchase (200), unauthenticated purchase (401), insufficient/zero stock (409 Conflict), non-existent vehicle (404), immutable audit log creation in `Purchase` collection, customer identity binding to verified JWT context, and high-concurrency race condition test verifying 0 stock overselling across simultaneous parallel requests. Commit `492e620`.
+  - **GREEN:** Implemented `Purchase` model in `backend/src/models/purchase.model.ts` and atomic purchase service with conditional MongoDB update `{ _id: vehicleId, quantityInStock: { $gte: 1 } }` and compensation rollback in `vehicle.service.ts`. Commit `cef5258`.
+  - **REFACTOR:** Synchronized `Purchase` model indexes in `backend/tests/setup.ts`. Commit `7e7b64d`.
+- **TDD Increment 6 (Admin-Only Restocking `POST /api/vehicles/:id/restock`):**
+  - **RED:** Added failing integration tests in `backend/tests/integration/vehicle/restock.test.ts` testing admin stock increment (200), customer forbidden (403), unauthenticated (401), non-positive or non-integer quantity rejection (400), non-existent vehicle (404), and malformed ID (400). Commit `24641f5`.
+  - **GREEN:** Implemented atomic restocking service using `$inc: { quantityInStock: quantity }` and controller/schema. Commit `23debcb`.
+  - **REFACTOR:** Added comprehensive unit test suite in `backend/tests/unit/modules/vehicle.schema.test.ts` verifying all Zod schemas (create, update, search, pagination, restock). Commit `3b23f2e`.
+- **NodeNext & Type Alignment Refactoring:**
+  - Resolved `moduleResolution: "NodeNext"` explicit `.js` import extensions and interface alignment across all modules. Commit `7e5312e`.
+- **Traceability & Documentation:**
+  - Marked requirements `REQ-VEH-01`, `REQ-VEH-02`, `REQ-VEH-03`, `REQ-VEH-04`, `REQ-VEH-05`, `REQ-VEH-06`, `REQ-INV-01`, `REQ-INV-02`, and `REQ-INV-03` as `VERIFIED` in `docs/02_REQUIREMENTS_TRACEABILITY_MATRIX.md`. Commit `a5dd444`.
+  - Updated `README.md` and `docs/03_SYSTEM_ARCHITECTURE_AND_API_CONTRACT.md` documenting Phase 03 REST contracts, schema attributes, and concurrency control architecture.
+- **Final Metrics:**
+  - Backend tests: 121/121 passed across 17 test suites.
+  - Frontend tests: 2/2 passed (0 regressions).
+  - Total tests: 123/123 passed.
+  - Statement coverage: 89.42% overall backend, 97.43% on `src/modules/vehicle`.
+  - Zero lint, typecheck, or format errors; production build succeeded cleanly.

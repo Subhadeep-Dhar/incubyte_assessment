@@ -44,7 +44,7 @@ export const searchVehiclesQuerySchema = z
       .default(10),
   })
   .refine(
-    (data) => {
+    data => {
       if (data.minPrice !== undefined && data.maxPrice !== undefined) {
         return data.minPrice <= data.maxPrice;
       }
@@ -79,11 +79,7 @@ export const createVehicleSchema = z.object({
     .number({ required_error: 'Quantity in stock is required' })
     .int({ message: 'Quantity in stock must be an integer' })
     .min(0, { message: 'Quantity in stock cannot be negative' }),
-  year: z
-    .number()
-    .int()
-    .min(1900, { message: 'Year must be 1900 or later' })
-    .optional(),
+  year: z.number().int().min(1900, { message: 'Year must be 1900 or later' }).optional(),
   description: z.string().trim().optional(),
   imageUrl: z.string().trim().optional(),
 });
@@ -95,7 +91,7 @@ export const updateVehicleSchema = createVehicleSchema.partial().strict();
 export type UpdateVehicleInput = z.infer<typeof updateVehicleSchema>;
 
 export const vehicleIdParamSchema = z.object({
-  id: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+  id: z.string().refine(val => mongoose.Types.ObjectId.isValid(val), {
     message: 'Invalid vehicle ID format',
   }),
 });

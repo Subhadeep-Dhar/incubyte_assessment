@@ -46,9 +46,7 @@ export class VehicleService {
     };
   }
 
-  async searchVehicles(
-    query: SearchVehiclesQuery,
-  ): Promise<PaginatedResult<IVehicle>> {
+  async searchVehicles(query: SearchVehiclesQuery): Promise<PaginatedResult<IVehicle>> {
     const filter: Record<string, unknown> = {};
 
     if (query.make) {
@@ -81,11 +79,7 @@ export class VehicleService {
     const skip = (page - 1) * limit;
 
     const [data, total] = await Promise.all([
-      Vehicle.find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .exec(),
+      Vehicle.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).exec(),
       Vehicle.countDocuments(filter).exec(),
     ]);
 
@@ -114,10 +108,7 @@ export class VehicleService {
     return await Vehicle.create(data);
   }
 
-  async updateVehicle(
-    id: string,
-    data: UpdateVehicleInput,
-  ): Promise<IVehicle> {
+  async updateVehicle(id: string, data: UpdateVehicleInput): Promise<IVehicle> {
     const updated = await Vehicle.findByIdAndUpdate(id, data, {
       new: true,
       runValidators: true,
@@ -154,10 +145,7 @@ export class VehicleService {
       if (!vehicleExists) {
         throw new NotFoundError(`Vehicle with ID "${vehicleId}" was not found`);
       }
-      throw new ConflictError(
-        'The requested vehicle is out of stock',
-        'INSUFFICIENT_STOCK',
-      );
+      throw new ConflictError('The requested vehicle is out of stock', 'INSUFFICIENT_STOCK');
     }
 
     try {

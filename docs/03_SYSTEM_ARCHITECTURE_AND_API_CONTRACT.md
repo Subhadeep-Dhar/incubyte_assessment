@@ -144,32 +144,31 @@ interface IUser {
 
 ```typescript
 interface IVehicle {
-  _id: string;
-  vin: string; // Unique, indexed, 17-char or formatted vehicle ID
+  _id: mongoose.Types.ObjectId;
   make: string; // e.g. "Toyota", "BMW", "Tesla" (indexed)
   model: string; // e.g. "Camry", "M3", "Model 3" (indexed)
-  year: number; // 1900 - current year + 1
-  price: number; // Non-negative integer or float (indexed)
-  category: 'Sedan' | 'SUV' | 'Truck' | 'Coupe' | 'EV' | 'Hatchback'; // Enum (indexed)
-  stockQuantity: number; // Integer >= 0 (indexed)
+  category: 'Sedan' | 'SUV' | 'Truck' | 'Coupe' | 'Hatchback' | 'EV' | 'Convertible' | 'Van'; // Enum (indexed)
+  price: number; // Finite positive amount (> 0) (indexed)
+  quantityInStock: number; // Non-negative integer (>= 0) (indexed)
+  year?: number; // Optional model year (1900 - current year + 1)
   description?: string; // Optional editorial description
-  imageUrl?: string; // Vehicle visual asset URL
+  imageUrl?: string; // Optional vehicle visual asset URL
   createdAt: Date;
   updatedAt: Date;
 }
 ```
 
-### 4.3 Purchase Audit Log Entity (`PurchaseLog`)
+### 4.3 Purchase Audit Log Entity (`Purchase`)
 
 ```typescript
-interface IPurchaseLog {
-  _id: string;
-  vehicleId: string; // Reference to Vehicle
-  userId: string; // Reference to User
-  quantity: number; // Typically 1
-  unitPrice: number; // Price at time of transaction
-  totalPrice: number; // unitPrice * quantity
-  purchasedAt: Date;
+interface IPurchase {
+  _id: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId; // Reference to User
+  vehicleId: mongoose.Types.ObjectId; // Reference to Vehicle
+  priceAtPurchase: number; // Snapshot of vehicle price at time of purchase
+  purchasedAt: Date; // Timestamp of purchase transaction
+  createdAt: Date;
+  updatedAt: Date;
 }
 ```
 
@@ -188,13 +187,26 @@ All endpoints adhere to standard REST conventions and return JSON payloads.
     "data": { ... }
   }
   ```
+- **Paginated Success:**
+  ```json
+  {
+    "success": true,
+    "data": [ ... ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 42,
+      "totalPages": 5
+    }
+  }
+  ```
 - **Error:**
   ```json
   {
     "success": false,
     "error": {
       "code": "INSUFFICIENT_STOCK",
-      "message": "The requested vehicle is currently out of stock",
+      "message": "Vehicle is out of stock",
       "details": []
     }
   }
@@ -210,35 +222,50 @@ All endpoints adhere to standard REST conventions and return JSON payloads.
 
 ### 5.3 Vehicle Catalog & Inventory Endpoints (`/api/vehicles`)
 
-| Method   | Endpoint                     | Access                             | Query / Body                                                                              | Response Codes                    | Description                                      |
-| :------- | :--------------------------- | :--------------------------------- | :---------------------------------------------------------------------------------------- | :-------------------------------- | :----------------------------------------------- |
-| `GET`    | `/api/vehicles`              | **Public**                         | Query: `make`, `model`, `category`, `minPrice`, `maxPrice`, `page`, `limit`               | `200`, `400`                      | Search and filter vehicles with pagination.      |
-| `GET`    | `/api/vehicles/:id`          | **Public**                         | None                                                                                      | `200`, `404`                      | Get single vehicle details by ID or VIN.         |
-| `POST`   | `/api/vehicles`              | **Admin Only**                     | Body: `{ vin, make, model, year, price, category, stockQuantity, description, imageUrl }` | `201`, `400`, `401`, `403`, `409` | Create new vehicle in inventory.                 |
-| `PUT`    | `/api/vehicles/:id`          | **Admin Only**                     | Body: `{ make?, model?, year?, price?, category?, description?, imageUrl? }`              | `200`, `400`, `401`, `403`, `404` | Update vehicle metadata.                         |
-| `DELETE` | `/api/vehicles/:id`          | **Admin Only**                     | None                                                                                      | `200`, `401`, `403`, `404`        | Delete a vehicle record from inventory.          |
-| `POST`   | `/api/vehicles/:id/purchase` | **Authenticated (Customer/Admin)** | Body: `{ quantity?: number }` (default: 1)                                                | `200`, `400`, `401`, `404`, `409` | Atomically purchase vehicle and decrement stock. |
-| `POST`   | `/api/vehicles/:id/restock`  | **Admin Only**                     | Body: `{ quantity: number }` (must be > 0)                                                | `200`, `400`, `401`, `403`, `404` | Increase stock quantity for an existing vehicle. |
+| Method   | Endpoint                     | Access                             | Query / Body                                                                                   | Response Codes                    | Description                                                          |
+| :------- | :--------------------------- | :--------------------------------- | :--------------------------------------------------------------------------------------------- | :-------------------------------- | :------------------------------------------------------------------- |
+| `GET`    | `/api/vehicles`              | **Public**                         | Query: `page`, `limit`, `sortBy`, `sortOrder`                                                  | `200`, `400`                      | Browse vehicle catalog with pagination. Zero-stock vehicles visible. |
+| `GET`    | `/api/vehicles/search`       | **Public**                         | Query: `make`, `model`, `category`, `minPrice`, `maxPrice`, `page`, `limit`                    | `200`, `400`                      | Search and filter catalog with safe regex matching & price bounds.   |
+| `GET`    | `/api/vehicles/:id`          | **Public**                         | None                                                                                           | `200`, `400`, `404`               | Retrieve single vehicle detail by MongoDB ID.                        |
+| `POST`   | `/api/vehicles`              | **Admin Only**                     | Body: `{ make, model, category, price, quantityInStock, year?, description?, imageUrl? }`      | `201`, `400`, `401`, `403`        | Create new vehicle in inventory.                                     |
+| `PUT`    | `/api/vehicles/:id`          | **Admin Only**                     | Body: `{ make?, model?, category?, price?, quantityInStock?, year?, description?, imageUrl? }` | `200`, `400`, `401`, `403`, `404` | Update vehicle metadata and stock.                                   |
+| `DELETE` | `/api/vehicles/:id`          | **Admin Only**                     | None                                                                                           | `200`, `400`, `401`, `403`, `404` | Delete vehicle record from inventory (preserves audit records).      |
+| `POST`   | `/api/vehicles/:id/purchase` | **Authenticated (Customer/Admin)** | None                                                                                           | `200`, `400`, `401`, `404`, `409` | Atomically purchase 1 unit; creates purchase audit record.           |
+| `POST`   | `/api/vehicles/:id/restock`  | **Admin Only**                     | Body: `{ quantity: number }` (positive integer)                                                | `200`, `400`, `401`, `403`, `404` | Atomically increment stock quantity.                                 |
 
 ---
 
-## 6. Critical Security Controls
+## 6. Critical Security & Concurrency Controls
 
 1. **Role Escalation Prevention:**
    - The registration Zod schema strictly strips or rejects any `role` attribute provided in the request body. Role is hard-coded to `'customer'` in `auth.service.ts`.
    - Admin users can only be initialized via a secure database seed script using environment variables (`ADMIN_INITIAL_EMAIL`, `ADMIN_INITIAL_PASSWORD`).
-2. **Atomic Inventory Decrement (Race Condition Immunity):**
+2. **Atomic Inventory Decrement (Race Condition & Oversell Immunity):**
    - Stock reduction uses conditional MongoDB atomic operations:
      ```typescript
-     const updatedVehicle = await Vehicle.findOneAndUpdate(
-       { _id: vehicleId, stockQuantity: { $gte: purchaseQty } },
-       { $inc: { stockQuantity: -purchaseQty } },
+     const vehicle = await Vehicle.findOneAndUpdate(
+       { _id: vehicleId, quantityInStock: { $gte: 1 } },
+       { $inc: { quantityInStock: -1 } },
        { new: true },
      );
-     if (!updatedVehicle) {
-       throw new ConflictError('Insufficient stock available for purchase');
+     if (!vehicle) {
+       // Check if vehicle exists to distinguish 404 Not Found from 409 Conflict
+       const exists = await Vehicle.findById(vehicleId);
+       if (!exists) throw new NotFoundError('Vehicle not found');
+       throw new ConflictError('Vehicle is out of stock');
      }
      ```
-   - This database-level lock ensures that two concurrent requests for the last remaining vehicle cannot both succeed. One will succeed; the other will receive HTTP 409 Conflict with zero negative stock risk.
-3. **Password Sanitization:**
+   - If audit record creation fails post-decrement on environments without replica sets, compensation rollback restores the decremented inventory unit:
+     ```typescript
+     try {
+       await Purchase.create({ userId, vehicleId, priceAtPurchase: vehicle.price });
+     } catch (err) {
+       await Vehicle.findByIdAndUpdate(vehicleId, { $inc: { quantityInStock: 1 } });
+       throw err;
+     }
+     ```
+   - This ensures zero oversell guarantee under high concurrency without requiring multi-document replica set transaction prerequisites on standalone testing instances.
+3. **Safe Search Query Execution:**
+   - Free-text user search queries are escaped using `escapeRegex` before MongoDB `$regex` evaluation, preventing ReDoS (Regular Expression Denial of Service) and regex injection attacks.
+4. **Password Sanitization:**
    - Mongoose schema options set `transform: (doc, ret) => { delete ret.passwordHash; return ret; }` to prevent accidental serialization in logs or HTTP responses.

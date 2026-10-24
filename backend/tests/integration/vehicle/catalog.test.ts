@@ -65,9 +65,7 @@ describe('GET /api/vehicles - Public Vehicle Catalog (Integration Test)', () => 
     expect(res.status).toBe(200);
     expect(res.body.data.length).toBe(2);
 
-    const outOfStock = res.body.data.find(
-      (v: { model: string }) => v.model === 'CX-5',
-    );
+    const outOfStock = res.body.data.find((v: { model: string }) => v.model === 'CX-5');
     expect(outOfStock).toBeDefined();
     expect(outOfStock.quantityInStock).toBe(0);
   });
@@ -117,9 +115,7 @@ describe('GET /api/vehicles - Public Vehicle Catalog (Integration Test)', () => 
     const negativePageRes = await request(app).get('/api/vehicles?page=-2');
     expect(negativePageRes.status).toBe(400);
 
-    const excessiveLimitRes = await request(app).get(
-      '/api/vehicles?limit=500',
-    );
+    const excessiveLimitRes = await request(app).get('/api/vehicles?limit=500');
     expect(excessiveLimitRes.status).toBe(400);
 
     const invalidLimitRes = await request(app).get('/api/vehicles?limit=abc');
