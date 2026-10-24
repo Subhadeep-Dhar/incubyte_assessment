@@ -46,6 +46,24 @@ export class VehicleController {
     }
   }
 
+  async getVehicleById(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+      const vehicle = await vehicleService.getVehicleById(id);
+
+      res.status(200).json({
+        success: true,
+        data: vehicle,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async createVehicle(
     req: Request,
     res: Response,

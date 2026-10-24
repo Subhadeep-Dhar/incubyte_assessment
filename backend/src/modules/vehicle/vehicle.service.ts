@@ -100,6 +100,14 @@ export class VehicleService {
     };
   }
 
+  async getVehicleById(id: string): Promise<IVehicle> {
+    const vehicle = await Vehicle.findById(id).exec();
+    if (!vehicle) {
+      throw new NotFoundError(`Vehicle with ID "${id}" was not found`);
+    }
+    return vehicle;
+  }
+
   async createVehicle(data: CreateVehicleInput): Promise<IVehicle> {
     return await Vehicle.create(data);
   }

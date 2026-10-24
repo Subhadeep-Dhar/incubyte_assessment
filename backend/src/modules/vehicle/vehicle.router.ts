@@ -26,6 +26,13 @@ router.get(
   vehicleController.getCatalog,
 );
 
+// Public single vehicle detail
+router.get(
+  '/:id',
+  validateRequest({ params: vehicleIdParamSchema }),
+  vehicleController.getVehicleById,
+);
+
 // Admin-only vehicle creation
 router.post(
   '/',

@@ -125,4 +125,38 @@ describe('GET /api/vehicles - Public Vehicle Catalog (Integration Test)', () => 
     const invalidLimitRes = await request(app).get('/api/vehicles?limit=abc');
     expect(invalidLimitRes.status).toBe(400);
   });
+
+  describe('GET /api/vehicles/:id - Single Vehicle Details', () => {
+    it('should return vehicle details for a valid ID (200 OK)', async () => {
+      const vehicle = await Vehicle.create({
+        make: 'Subaru',
+        model: 'Outback',
+        category: 'SUV',
+        price: 33000,
+        quantityInStock: 2,
+      });
+
+      const res = await request(app).get(`/api/vehicles/${vehicle._id}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.make).toBe('Subaru');
+      expect(res.body.data.model).toBe('Outback');
+    });
+
+    it('should return 404 Not Found for non-existent vehicle ID', async () => {
+      const nonExistentId = '6adcef3a243e4150eb3cad99';
+      const res = await request(app).get(`/api/vehicles/${nonExistentId}`);
+
+      expect(res.status).toBe(404);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('should return 400 Bad Request for malformed vehicle ID', async () => {
+      const res = await request(app).get('/api/vehicles/invalid-id-format');
+
+      expect(res.status).toBe(400);
+      expect(res.body.success).toBe(false);
+    });
+  });
 });
