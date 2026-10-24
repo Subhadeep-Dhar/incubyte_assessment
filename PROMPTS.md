@@ -81,3 +81,50 @@ The local folder is currently not initialized as a Git repository. The remote re
 - Committed Phase 01 baseline scaffolding as commit `34afd0e` with trailer `Co-authored-by: Google Antigravity <noreply@google.com>`.
 - Pushed `main` to `origin/main`.
 - Observed live GitHub Actions CI run `40105362962` execute and complete with status `completed` and conclusion `success`.
+
+---
+
+## Interaction 03: Phase 02 — Authentication, Security & Role-Based Access Control
+
+### User Prompt
+
+```text
+INCUBYTE CAR DEALERSHIP — PHASE 02
+AUTHENTICATION, SECURITY & ROLE-BASED ACCESS CONTROL
+You are continuing work in the existing repository:
+https://github.com/Subhadeep-Dhar/incubyte_assessment
+The Phase 01 foundation has reportedly been committed and pushed. Verify the actual current repository state before making changes.
+Your role is senior software engineer, security-conscious backend developer, and strict TDD practitioner.
+PHASE OBJECTIVE
+Implement and thoroughly test the authentication foundation:
+User registration.
+User login.
+Secure password hashing and verification.
+JWT issuance and verification.
+Authentication middleware.
+Role-based authorization primitives.
+Secure initial administrator provisioning.
+Appropriate validation, error handling and security tests.
+Implement ONLY the authentication and authorization foundation. Vehicle CRUD, purchasing, restocking and the finished frontend are explicitly out of scope.
+[Full prompt detailed 13 sections: pre-flight verification, strict TDD rules, user data model, registration API, login API, JWT & auth middleware, RBAC primitives, secure admin provisioning, security & error handling, testing requirements, documentation & traceability, Git & AI co-authorship, phase exit gate]
+```
+
+### Assistant Action Summary
+
+- **Pre-Flight Verification:** Inspected working tree, validated clean sync with `origin/main` (commit `b8e596b`), verified real local MongoDB service running on `127.0.0.1:27017`.
+- **TDD Increment 1 (Password Hashing):** Implemented `backend/src/utils/password.util.ts` using `bcryptjs` with 12 salt rounds. Tested in `backend/tests/unit/utils/password.test.ts` (4/4 tests passed: hashing, verification, mismatch rejection, distinct salt generation).
+- **TDD Increment 2 (JWT Token Signing & Verification):** Implemented `backend/src/utils/jwt.util.ts` with explicit `HS256` algorithm verification, expiry enforcement, and tampering rejection. Tested in `backend/tests/unit/utils/jwt.test.ts` (6/6 tests passed).
+- **TDD Increment 3 (User Model & MongoDB Persistence):** Implemented `backend/src/models/user.model.ts` with normalized lowercase/trimmed email, unique compound index, `pre('validate')` virtual password hashing hook, instance method `comparePassword`, and `toJSON` transform stripping `passwordHash`. Tested in `backend/tests/unit/models/user.test.ts` (6/6 tests passed against persistent MongoDB).
+- **TDD Increment 4 (Zod Request Validation):** Implemented `backend/src/modules/auth/auth.schema.ts` enforcing password policy (minimum 8 chars, 1 uppercase, 1 lowercase, 1 number) and stripping client-supplied `role` to eliminate privilege escalation. Implemented reusable `backend/src/middleware/validate.middleware.ts`. Tested in `backend/tests/unit/modules/auth.schema.test.ts` (8/8 tests passed).
+- **TDD Increment 5 (Auth & RBAC Middleware):** Implemented typed error classes in `backend/src/utils/errors.ts`, sensitive route rate limiter in `backend/src/middleware/rate-limiter.middleware.ts`, and `authenticateJwt` & `requireRole` middleware in `backend/src/middleware/auth.middleware.ts`. Tested in `backend/tests/integration/auth/middleware.test.ts` (10/10 tests passed: customer access, admin-only 403 Forbidden enforcement, expired/tampered/missing token handling).
+- **TDD Increment 6 (Registration & Login Endpoints):** Implemented `backend/src/modules/auth/auth.service.ts`, `auth.controller.ts`, and `auth.router.ts`. Tested in `backend/tests/integration/auth/register.test.ts` (7/7 tests passed: 201 Created, duplicate email 409 Conflict, validation rejection, role escalation immunity) and `backend/tests/integration/auth/login.test.ts` (6/6 tests passed: valid login with JWT, anti-enumeration generic 401 Unauthorized for both invalid password and non-existent email).
+- **TDD Increment 7 (Idempotent Admin Provisioning CLI):** Implemented `backend/src/scripts/seed-admin.ts` (`npm run seed:admin`), reading validated credentials from environment variables (`ADMIN_INITIAL_*`). Tested in `backend/tests/integration/auth/seed-admin.test.ts` (5/5 tests passed: provisioning, idempotency, password preservation, authentication).
+- **Quality & Coverage Verification:**
+  - Backend tests: 54/54 passed across 9 test files.
+  - Frontend tests: 2/2 passed (zero regressions).
+  - Overall statement coverage: 80.13% (100% on auth routes, validation schemas, and password utilities).
+  - TypeScript typechecking (`npm run typecheck`): 0 errors.
+  - ESLint (`npm run lint`): 0 errors.
+  - Prettier format check (`npm run format:check`): 100% compliant.
+  - Production build (`npm run build`): 0 errors.
+- **Traceability Updates:** Updated `docs/02_REQUIREMENTS_TRACEABILITY_MATRIX.md` marking `REQ-AUTH-01`, `REQ-AUTH-02`, `REQ-AUTH-03`, `REQ-AUTH-04` as `VERIFIED`. Documented Phase 02 endpoints and seed CLI in `README.md`.

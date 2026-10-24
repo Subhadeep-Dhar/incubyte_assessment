@@ -4,6 +4,9 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import { env } from './config/env.js';
 
+import { authRouter } from './modules/auth/auth.router.js';
+import { AppError } from './utils/errors.js';
+
 export const app = express();
 
 // Security and utility middleware
@@ -32,6 +35,9 @@ app.get('/health', (_req: Request, res: Response) => {
   });
 });
 
+// API Routes
+app.use('/api/auth', authRouter);
+
 // Fallback 404 handler for unknown routes
 app.use((_req: Request, res: Response) => {
   res.status(404).json({
@@ -45,6 +51,18 @@ app.use((_req: Request, res: Response) => {
 
 // Centralized error handler
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  if (err instanceof AppError) {
+    res.status(err.statusCode).json({
+      success: false,
+      error: {
+        code: err.code,
+        message: err.message,
+        details: err.details,
+      },
+    });
+    return;
+  }
+
   console.error('Unhandled Application Error:', err);
   res.status(500).json({
     success: false,

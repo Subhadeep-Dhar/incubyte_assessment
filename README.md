@@ -146,7 +146,53 @@ Detailed engineering contracts and architectural specifications are maintained i
 
 ---
 
-## 7. My AI Usage & Transparency Disclosure
+## 7. Authentication, Security & Role-Based Access Control (Phase 02)
+
+The system implements a zero-trust, stateless JWT authentication architecture with server-enforced Role-Based Access Control (RBAC).
+
+### Supported Roles
+
+- **`customer`**: Self-registered users. Permitted to browse inventory, purchase vehicles (Phase 04), and view their own profile.
+- **`admin`**: System administrators. Privileged access to restock vehicles, add/edit/delete inventory listings (Phase 03). Cannot be self-registered via public endpoints.
+
+### Authentication REST Endpoints
+
+| Method | Endpoint             | Access        | Description                                                            |
+| ------ | -------------------- | ------------- | ---------------------------------------------------------------------- |
+| `POST` | `/api/auth/register` | Public        | Registers a new account. Always assigns `customer` role server-side.   |
+| `POST` | `/api/auth/login`    | Public        | Authenticates credentials and returns a signed HS256 JWT (24h expiry). |
+| `GET`  | `/api/auth/me`       | Authenticated | Returns safe user profile for the verified Bearer token.               |
+
+#### Password & Security Policy
+
+- **Complexity Requirement:** Minimum 8 characters, at least one uppercase letter, one lowercase letter, and one number.
+- **Hashing Work Factor:** Passwords are never stored in plaintext; hashed with `bcryptjs` using **12 salt rounds**.
+- **Safe Serialization:** Mongoose schema transforms and Express controllers guarantee `passwordHash` is never exposed via JSON serialization or logs.
+- **Anti-Enumeration:** Login authentication failures emit identical `401 Unauthorized` responses with generic error messages (`INVALID_CREDENTIALS`) for both non-existent emails and invalid passwords.
+
+### Initial Administrator Provisioning
+
+To prevent public privilege escalation vulnerabilities, administrator accounts cannot be registered through public web endpoints. Administrators are provisioned strictly via the idempotent CLI seed command:
+
+```bash
+# Provision initial administrator from backend/.env configuration
+npm run seed:admin
+```
+
+_Configuration variables in `backend/.env`:_
+
+- `ADMIN_INITIAL_NAME`: Administrator full name (e.g., `System Administrator`)
+- `ADMIN_INITIAL_EMAIL`: Administrator login email (e.g., `admin@dealership.com`)
+- `ADMIN_INITIAL_PASSWORD`: Secure initial password conforming to password policy
+
+**Idempotency & Safety:**
+
+- If an account with `ADMIN_INITIAL_EMAIL` already exists, the script safely exits without modifying existing passwords or data.
+- Initial passwords are never hardcoded and never logged to stdout or persistent files.
+
+---
+
+## 8. My AI Usage & Transparency Disclosure
 
 In accordance with Incubyte's assessment guidelines and commitment to transparent software craftsmanship:
 
