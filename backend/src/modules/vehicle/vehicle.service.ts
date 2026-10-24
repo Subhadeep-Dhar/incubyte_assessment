@@ -1,6 +1,8 @@
+import mongoose from 'mongoose';
 import { Vehicle, IVehicle } from '../../models/vehicle.model';
+import { Purchase, IPurchase } from '../../models/purchase.model';
 import { escapeRegex } from '../../utils/regex.util';
-import { NotFoundError } from '../../utils/errors';
+import { NotFoundError, ConflictError } from '../../utils/errors';
 import {
   CatalogQuery,
   SearchVehiclesQuery,
@@ -132,6 +134,51 @@ export class VehicleService {
     const deleted = await Vehicle.findByIdAndDelete(id).exec();
     if (!deleted) {
       throw new NotFoundError(`Vehicle with ID "${id}" was not found`);
+    }
+  }
+
+  async purchaseVehicle(
+    vehicleId: string,
+    userId: string,
+  ): Promise<{ vehicle: IVehicle; purchase: IPurchase }> {
+    // Atomic conditional decrement: matches vehicle ONLY if quantityInStock >= 1
+    const updatedVehicle = await Vehicle.findOneAndUpdate(
+      { _id: vehicleId, quantityInStock: { $gte: 1 } },
+      { $inc: { quantityInStock: -1 } },
+      { new: true },
+    ).exec();
+
+    if (!updatedVehicle) {
+      // Differentiate between vehicle non-existence and out-of-stock
+      const vehicleExists = await Vehicle.findById(vehicleId).exec();
+      if (!vehicleExists) {
+        throw new NotFoundError(`Vehicle with ID "${vehicleId}" was not found`);
+      }
+      throw new ConflictError(
+        'The requested vehicle is out of stock',
+        'INSUFFICIENT_STOCK',
+      );
+    }
+
+    try {
+      // Record purchase audit record
+      const purchase = await Purchase.create({
+        userId: new mongoose.Types.ObjectId(userId),
+        vehicleId: updatedVehicle._id,
+        priceAtPurchase: updatedVehicle.price,
+        purchasedAt: new Date(),
+      });
+
+      return {
+        vehicle: updatedVehicle,
+        purchase,
+      };
+    } catch (auditError) {
+      // Compensate: restore decremented stock if audit record persistence fails
+      await Vehicle.findByIdAndUpdate(vehicleId, {
+        $inc: { quantityInStock: 1 },
+      }).exec();
+      throw auditError;
     }
   }
 }

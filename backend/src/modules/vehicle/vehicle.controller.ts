@@ -118,6 +118,26 @@ export class VehicleController {
       next(error);
     }
   }
+
+  async purchaseVehicle(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+      const userId = req.user!.id;
+
+      const result = await vehicleService.purchaseVehicle(id, userId);
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const vehicleController = new VehicleController();

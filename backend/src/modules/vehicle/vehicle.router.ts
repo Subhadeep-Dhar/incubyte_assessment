@@ -60,4 +60,12 @@ router.delete(
   vehicleController.deleteVehicle,
 );
 
+// Authenticated vehicle purchasing (customer or admin)
+router.post(
+  '/:id/purchase',
+  authenticateJwt,
+  validateRequest({ params: vehicleIdParamSchema }),
+  vehicleController.purchaseVehicle,
+);
+
 export const vehicleRouter = router;

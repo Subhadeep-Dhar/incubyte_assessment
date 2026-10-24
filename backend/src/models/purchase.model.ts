@@ -5,13 +5,45 @@ export interface IPurchase extends Document {
   vehicleId: mongoose.Types.ObjectId;
   priceAtPurchase: number;
   purchasedAt: Date;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-const purchaseSchema = new Schema<IPurchase>({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  vehicleId: { type: Schema.Types.ObjectId, ref: 'Vehicle', required: true },
-  priceAtPurchase: { type: Number, required: true },
-  purchasedAt: { type: Date, default: Date.now },
-});
+const purchaseSchema = new Schema<IPurchase>(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'User ID is required'],
+      index: true,
+    },
+    vehicleId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Vehicle',
+      required: [true, 'Vehicle ID is required'],
+      index: true,
+    },
+    priceAtPurchase: {
+      type: Number,
+      required: [true, 'Price at purchase is required'],
+      min: [0.01, 'Price at purchase must be positive'],
+    },
+    purchasedAt: {
+      type: Date,
+      default: Date.now,
+      required: true,
+      index: true,
+    },
+  },
+  {
+    timestamps: true,
+    toJSON: {
+      transform: (_doc, ret) => {
+        delete (ret as Record<string, unknown>).__v;
+        return ret;
+      },
+    },
+  },
+);
 
 export const Purchase = mongoose.model<IPurchase>('Purchase', purchaseSchema);
