@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { env } from './config/env.js';
 
 import { authRouter } from './modules/auth/auth.router.js';
+import { vehicleRouter } from './modules/vehicle/vehicle.router.js';
 import { AppError } from './utils/errors.js';
 
 export const app = express();
@@ -37,6 +38,7 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // API Routes
 app.use('/api/auth', authRouter);
+app.use('/api/vehicles', vehicleRouter);
 
 // Fallback 404 handler for unknown routes
 app.use((_req: Request, res: Response) => {
