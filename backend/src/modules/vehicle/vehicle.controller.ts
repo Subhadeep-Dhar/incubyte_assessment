@@ -5,6 +5,7 @@ import {
   SearchVehiclesQuery,
   CreateVehicleInput,
   UpdateVehicleInput,
+  RestockVehicleInput,
 } from './vehicle.schema';
 
 export class VehicleController {
@@ -133,6 +134,26 @@ export class VehicleController {
       res.status(200).json({
         success: true,
         data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async restockVehicle(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { quantity } = req.body as RestockVehicleInput;
+
+      const updated = await vehicleService.restockVehicle(id, quantity);
+
+      res.status(200).json({
+        success: true,
+        data: updated,
       });
     } catch (error) {
       next(error);

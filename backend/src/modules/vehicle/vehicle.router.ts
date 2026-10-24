@@ -8,6 +8,7 @@ import {
   createVehicleSchema,
   updateVehicleSchema,
   vehicleIdParamSchema,
+  restockVehicleSchema,
 } from './vehicle.schema';
 
 const router = Router();
@@ -66,6 +67,15 @@ router.post(
   authenticateJwt,
   validateRequest({ params: vehicleIdParamSchema }),
   vehicleController.purchaseVehicle,
+);
+
+// Admin-only vehicle restocking
+router.post(
+  '/:id/restock',
+  authenticateJwt,
+  requireRole('admin'),
+  validateRequest({ params: vehicleIdParamSchema, body: restockVehicleSchema }),
+  vehicleController.restockVehicle,
 );
 
 export const vehicleRouter = router;

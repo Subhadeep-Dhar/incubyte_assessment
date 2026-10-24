@@ -181,6 +181,20 @@ export class VehicleService {
       throw auditError;
     }
   }
+
+  async restockVehicle(id: string, quantity: number): Promise<IVehicle> {
+    const updated = await Vehicle.findByIdAndUpdate(
+      id,
+      { $inc: { quantityInStock: quantity } },
+      { new: true, runValidators: true },
+    ).exec();
+
+    if (!updated) {
+      throw new NotFoundError(`Vehicle with ID "${id}" was not found`);
+    }
+
+    return updated;
+  }
 }
 
 export const vehicleService = new VehicleService();

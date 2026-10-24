@@ -101,3 +101,13 @@ export const vehicleIdParamSchema = z.object({
 });
 
 export type VehicleIdParam = z.infer<typeof vehicleIdParamSchema>;
+
+export const restockVehicleSchema = z.object({
+  quantity: z
+    .number({ required_error: 'Restock quantity is required' })
+    .int({ message: 'Restock quantity must be an integer' })
+    .positive({ message: 'Restock quantity must be a positive integer' })
+    .max(10000, { message: 'Restock quantity cannot exceed 10000 units' }),
+});
+
+export type RestockVehicleInput = z.infer<typeof restockVehicleSchema>;
