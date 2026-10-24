@@ -41,7 +41,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       setAuthToken(storedToken);
       try {
-        const currentUser = await apiClient.get<User>('/auth/me');
+        const meResponse = await apiClient.get<{ user?: User } | User>('/auth/me');
+        const currentUser = (meResponse as { user?: User })?.user || (meResponse as User);
         setUser(currentUser);
       } catch {
         // Stored token is invalid or expired
