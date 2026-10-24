@@ -129,6 +129,31 @@ describe('ApiClient (Unit & Contract Test)', () => {
     }
   });
 
+  it('handles paginated response envelope and returns both data and pagination metadata', async () => {
+    const mockPaginated = {
+      success: true,
+      data: [{ id: '1', make: 'Ford', model: 'Mustang' }],
+      pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+    };
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => mockPaginated,
+    } as unknown as Response);
+
+    const result = await apiClient.getPaginated<{ id: string; make: string; model: string }>(
+      '/vehicles',
+      { params: { page: 1, limit: 10 } },
+    );
+
+    const [url] = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0];
+    expect(url).toContain('page=1');
+    expect(url).toContain('limit=10');
+    expect(result.data).toHaveLength(1);
+    expect(result.pagination.total).toBe(1);
+  });
+
   it('handles network failure and wraps it in an ApiClientError with NETWORK_ERROR code', async () => {
     global.fetch = vi.fn().mockRejectedValue(new Error('Failed to fetch'));
 
