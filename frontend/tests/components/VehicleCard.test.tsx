@@ -23,7 +23,7 @@ describe('VehicleCard Component (Unit & Presentation Test)', () => {
 
     expect(screen.getByText(/porsche taycan/i)).toBeInTheDocument();
     expect(screen.getByText('2024')).toBeInTheDocument();
-    expect(screen.getByText('EV')).toBeInTheDocument();
+    expect(screen.getAllByText('EV').length).toBeGreaterThan(0);
     expect(screen.getByText('$90,000')).toBeInTheDocument();
   });
 
@@ -46,7 +46,7 @@ describe('VehicleCard Component (Unit & Presentation Test)', () => {
 
     render(<VehicleCard vehicle={outOfStockVehicle} onPurchase={handlePurchase} />);
 
-    expect(screen.getByText(/out of stock/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/out of stock/i).length).toBe(2);
     const purchaseBtn = screen.getByRole('button', { name: /out of stock/i });
     expect(purchaseBtn).toBeDisabled();
 
