@@ -1,0 +1,58 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Lint, Typecheck, Test & Build
+    runs-on: ubuntu-latest
+
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Check Code Formatting
+        run: npm run format:check
+
+      - name: Run Linter (Backend & Frontend)
+        run: npm run lint
+
+      - name: Run TypeScript Strict Typecheck
+        run: npm run typecheck
+
+      - name: Run Backend Integration & Unit Tests
+        env:
+          NODE_ENV: test
+          MONGODB_TEST_URI: mongodb://127.0.0.1:27017/dealership_ci_test
+          JWT_SECRET: ci_test_jwt_secret_minimum_32_characters_long
+        run: npm run test:backend
+
+      - name: Run Frontend Tests
+        run: npm run test:frontend
+
+      - name: Build Backend & Frontend
+        run: npm run build
