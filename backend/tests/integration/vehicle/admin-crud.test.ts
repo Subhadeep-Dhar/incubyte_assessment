@@ -62,7 +62,7 @@ describe('Admin Vehicle CRUD (Integration Test)', () => {
 
       expect(res.status).toBe(403);
       expect(res.body.success).toBe(false);
-      expect(res.body.error.code).toBe('FORBIDDEN_RESOURCE');
+      expect(res.body.error.code).toBe('FORBIDDEN');
     });
 
     it('should reject unauthenticated requests to create vehicles (401 Unauthorized)', async () => {

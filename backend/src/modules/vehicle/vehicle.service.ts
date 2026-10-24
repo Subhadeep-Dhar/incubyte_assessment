@@ -1,6 +1,12 @@
 import { Vehicle, IVehicle } from '../../models/vehicle.model';
 import { escapeRegex } from '../../utils/regex.util';
-import { CatalogQuery, SearchVehiclesQuery } from './vehicle.schema';
+import { NotFoundError } from '../../utils/errors';
+import {
+  CatalogQuery,
+  SearchVehiclesQuery,
+  CreateVehicleInput,
+  UpdateVehicleInput,
+} from './vehicle.schema';
 
 export interface PaginationMeta {
   page: number;
@@ -92,6 +98,33 @@ export class VehicleService {
         totalPages,
       },
     };
+  }
+
+  async createVehicle(data: CreateVehicleInput): Promise<IVehicle> {
+    return await Vehicle.create(data);
+  }
+
+  async updateVehicle(
+    id: string,
+    data: UpdateVehicleInput,
+  ): Promise<IVehicle> {
+    const updated = await Vehicle.findByIdAndUpdate(id, data, {
+      new: true,
+      runValidators: true,
+    }).exec();
+
+    if (!updated) {
+      throw new NotFoundError(`Vehicle with ID "${id}" was not found`);
+    }
+
+    return updated;
+  }
+
+  async deleteVehicle(id: string): Promise<void> {
+    const deleted = await Vehicle.findByIdAndDelete(id).exec();
+    if (!deleted) {
+      throw new NotFoundError(`Vehicle with ID "${id}" was not found`);
+    }
   }
 }
 

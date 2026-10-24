@@ -1,7 +1,14 @@
 import { Router } from 'express';
 import { vehicleController } from './vehicle.controller';
 import { validateRequest } from '../../middleware/validate.middleware';
-import { catalogQuerySchema, searchVehiclesQuerySchema } from './vehicle.schema';
+import { authenticateJwt, requireRole } from '../../middleware/auth.middleware';
+import {
+  catalogQuerySchema,
+  searchVehiclesQuerySchema,
+  createVehicleSchema,
+  updateVehicleSchema,
+  vehicleIdParamSchema,
+} from './vehicle.schema';
 
 const router = Router();
 
@@ -17,6 +24,33 @@ router.get(
   '/',
   validateRequest({ query: catalogQuerySchema }),
   vehicleController.getCatalog,
+);
+
+// Admin-only vehicle creation
+router.post(
+  '/',
+  authenticateJwt,
+  requireRole('admin'),
+  validateRequest({ body: createVehicleSchema }),
+  vehicleController.createVehicle,
+);
+
+// Admin-only vehicle update
+router.put(
+  '/:id',
+  authenticateJwt,
+  requireRole('admin'),
+  validateRequest({ params: vehicleIdParamSchema, body: updateVehicleSchema }),
+  vehicleController.updateVehicle,
+);
+
+// Admin-only vehicle deletion
+router.delete(
+  '/:id',
+  authenticateJwt,
+  requireRole('admin'),
+  validateRequest({ params: vehicleIdParamSchema }),
+  vehicleController.deleteVehicle,
 );
 
 export const vehicleRouter = router;

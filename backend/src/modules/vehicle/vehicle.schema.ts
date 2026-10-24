@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import mongoose from 'mongoose';
+import { VEHICLE_CATEGORIES } from '../../models/vehicle.model';
 
 export const catalogQuerySchema = z.object({
   page: z.coerce
@@ -56,3 +58,46 @@ export const searchVehiclesQuerySchema = z
 
 export type SearchVehiclesQuery = z.infer<typeof searchVehiclesQuerySchema>;
 
+export const createVehicleSchema = z.object({
+  make: z
+    .string({ required_error: 'Vehicle make is required' })
+    .trim()
+    .min(1, { message: 'Vehicle make cannot be empty' }),
+  model: z
+    .string({ required_error: 'Vehicle model is required' })
+    .trim()
+    .min(1, { message: 'Vehicle model cannot be empty' }),
+  category: z.enum(VEHICLE_CATEGORIES, {
+    errorMap: () => ({
+      message: `Invalid category. Must be one of: ${VEHICLE_CATEGORIES.join(', ')}`,
+    }),
+  }),
+  price: z
+    .number({ required_error: 'Vehicle price is required' })
+    .positive({ message: 'Vehicle price must be greater than zero' }),
+  quantityInStock: z
+    .number({ required_error: 'Quantity in stock is required' })
+    .int({ message: 'Quantity in stock must be an integer' })
+    .min(0, { message: 'Quantity in stock cannot be negative' }),
+  year: z
+    .number()
+    .int()
+    .min(1900, { message: 'Year must be 1900 or later' })
+    .optional(),
+  description: z.string().trim().optional(),
+  imageUrl: z.string().trim().optional(),
+});
+
+export type CreateVehicleInput = z.infer<typeof createVehicleSchema>;
+
+export const updateVehicleSchema = createVehicleSchema.partial().strict();
+
+export type UpdateVehicleInput = z.infer<typeof updateVehicleSchema>;
+
+export const vehicleIdParamSchema = z.object({
+  id: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: 'Invalid vehicle ID format',
+  }),
+});
+
+export type VehicleIdParam = z.infer<typeof vehicleIdParamSchema>;
