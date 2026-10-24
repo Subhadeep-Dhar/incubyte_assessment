@@ -5,12 +5,16 @@ import { twMerge } from 'tailwind-merge';
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'success' | 'error' | 'warning' | 'info';
   title?: string;
+  action?: React.ReactNode;
+  onClose?: () => void;
   children: React.ReactNode;
 }
 
 export const Alert: React.FC<AlertProps> = ({
   variant = 'info',
   title,
+  action,
+  onClose,
   children,
   className,
   ...props
@@ -30,8 +34,23 @@ export const Alert: React.FC<AlertProps> = ({
       className={twMerge(clsx(baseStyles, variants[variant], className))}
       {...props}
     >
-      {title && <h4 className="font-semibold mb-1 text-sm">{title}</h4>}
-      <div className="leading-relaxed">{children}</div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex-1">
+          {title && <h4 className="font-semibold mb-1 text-sm">{title}</h4>}
+          <div className="leading-relaxed">{children}</div>
+        </div>
+        {action && <div className="shrink-0">{action}</div>}
+        {onClose && (
+          <button
+            type="button"
+            aria-label="Close alert"
+            onClick={onClose}
+            className="shrink-0 text-current opacity-60 hover:opacity-100 transition-opacity text-xs font-bold px-1"
+          >
+            ✕
+          </button>
+        )}
+      </div>
     </div>
   );
 };
