@@ -230,16 +230,16 @@ The frontend is an editorial, responsive Single-Page Application (SPA) designed 
 
 ### Core Frontend Components & Primitives
 
-| Component            | File Path                                                | Description                                                                                                   |
-| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `VehicleCard`        | `frontend/src/components/catalog/VehicleCard.tsx`        | Editorial card presenting vehicle imagery, year/category badges, stock status, formatted price, and purchase CTA. |
-| `VehicleGrid`        | `frontend/src/components/catalog/VehicleGrid.tsx`        | Responsive layout grid with 6-skeleton loading state and contextual empty state with filter reset action.       |
+| Component            | File Path                                                | Description                                                                                                        |
+| -------------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `VehicleCard`        | `frontend/src/components/catalog/VehicleCard.tsx`        | Editorial card presenting vehicle imagery, year/category badges, stock status, formatted price, and purchase CTA.  |
+| `VehicleGrid`        | `frontend/src/components/catalog/VehicleGrid.tsx`        | Responsive layout grid with 6-skeleton loading state and contextual empty state with filter reset action.          |
 | `SearchFilterBar`    | `frontend/src/components/catalog/SearchFilterBar.tsx`    | Interactive filtering bar with make/model keyword search, category dropdown, price boundary validation, and reset. |
-| `VehicleDetailModal` | `frontend/src/components/catalog/VehicleDetailModal.tsx` | Accessible Radix UI dialog displaying full vehicle specs, performance details, and direct purchase action.       |
-| `Navbar`             | `frontend/src/components/layout/Navbar.tsx`              | Responsive navigation header with brand identity, catalog link, admin portal link (admin only), and auth actions. |
-| `AuthContext`        | `frontend/src/context/AuthContext.tsx`                   | Context provider managing JWT lifecycle, localStorage synchronization, and `/api/auth/me` identity validation. |
-| `RouteGuards`        | `frontend/src/components/auth/RouteGuards.tsx`           | `ProtectedRoute` and `AdminRoute` higher-order components preventing unauthorized access to protected views. |
-| Shared UI Primitives | `frontend/src/components/ui/*`                           | Reusable `Button`, `Badge`, `Alert`, `Input`, and `Skeleton` built with Tailwind CSS and accessible semantics. |
+| `VehicleDetailModal` | `frontend/src/components/catalog/VehicleDetailModal.tsx` | Accessible Radix UI dialog displaying full vehicle specs, performance details, and direct purchase action.         |
+| `Navbar`             | `frontend/src/components/layout/Navbar.tsx`              | Responsive navigation header with brand identity, catalog link, admin portal link (admin only), and auth actions.  |
+| `AuthContext`        | `frontend/src/context/AuthContext.tsx`                   | Context provider managing JWT lifecycle, localStorage synchronization, and `/api/auth/me` identity validation.     |
+| `RouteGuards`        | `frontend/src/components/auth/RouteGuards.tsx`           | `ProtectedRoute` and `AdminRoute` higher-order components preventing unauthorized access to protected views.       |
+| Shared UI Primitives | `frontend/src/components/ui/*`                           | Reusable `Button`, `Badge`, `Alert`, `Input`, and `Skeleton` built with Tailwind CSS and accessible semantics.     |
 
 ### Zero-Stock Purchase Protection in UI
 
