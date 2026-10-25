@@ -116,9 +116,16 @@ export const apiClient = {
       ...options,
       rawEnvelope: true,
     });
+    const pagination = envelope.pagination ||
+      envelope.meta || {
+        page: 1,
+        limit: 10,
+        total: envelope.data?.length || 0,
+        totalPages: 1,
+      };
     return {
       data: envelope.data || [],
-      pagination: envelope.pagination,
+      pagination,
     };
   },
   post<T>(endpoint: string, body?: unknown, options?: RequestOptions): Promise<T> {

@@ -189,4 +189,3 @@ describe('ApiClient (Unit & Contract Test)', () => {
     expect(result.pagination).toEqual({ page: 1, limit: 10, total: 0, totalPages: 0 });
   });
 });
-

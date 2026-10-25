@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { CatalogPage } from '../../src/pages/CatalogPage';
 import { apiClient, ApiClientError } from '../../src/api/client';
 import { useAuth } from '../../src/context/AuthContext';
-import { Vehicle } from '../../src/types/api';
+import { Vehicle, Pagination } from '../../src/types/api';
 
 vi.mock('../../src/context/AuthContext', () => ({
   useAuth: vi.fn(),
@@ -206,11 +206,23 @@ describe('CatalogPage (Catalog, Search & Purchasing Flow Integration Test)', () 
     expect(screen.getByText('0 Units')).toBeInTheDocument();
   });
 
-  it('renders empty showroom without throwing when backend returns empty inventory with meta response', async () => {
-    // Exact reproduction: when pagination property is missing from envelope response
+  it('renders loading skeletons while inventory data is in-flight', () => {
+    vi.spyOn(apiClient, 'getPaginated').mockImplementationOnce(() => new Promise(() => {}));
+
+    render(
+      <MemoryRouter>
+        <CatalogPage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId('catalog-heading')).toBeInTheDocument();
+    expect(screen.getAllByTestId('skeleton-loader').length).toBeGreaterThan(0);
+  });
+
+  it('handles unexpected response structure safely without crashing', async () => {
     vi.spyOn(apiClient, 'getPaginated').mockResolvedValueOnce({
-      data: [],
-      pagination: undefined as any,
+      data: undefined as unknown as Vehicle[],
+      pagination: null as unknown as Pagination,
     });
 
     render(
@@ -224,5 +236,3 @@ describe('CatalogPage (Catalog, Search & Purchasing Flow Integration Test)', () 
     expect(screen.getByText('0 Units')).toBeInTheDocument();
   });
 });
-
-

@@ -9,17 +9,19 @@ import { VehicleDetailModal } from '../components/catalog/VehicleDetailModal';
 import { Alert } from '../components/ui/Alert';
 import { Button } from '../components/ui/Button';
 
+const DEFAULT_PAGINATION: Pagination = {
+  page: 1,
+  limit: 10,
+  total: 0,
+  totalPages: 0,
+};
+
 export const CatalogPage: React.FC = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [pagination, setPagination] = useState<Pagination>({
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 1,
-  });
+  const [pagination, setPagination] = useState<Pagination>(DEFAULT_PAGINATION);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [filters, setFilters] = useState<FilterState>({
     keyword: '',
@@ -78,14 +80,14 @@ export const CatalogPage: React.FC = () => {
           const response = await apiClient.getPaginated<Vehicle>('/vehicles/search', {
             params,
           });
-          setVehicles(response.data);
-          setPagination(response.pagination);
+          setVehicles(response.data || []);
+          setPagination(response.pagination || DEFAULT_PAGINATION);
         } else {
           const response = await apiClient.getPaginated<Vehicle>('/vehicles', {
             params: { page: pageToFetch, limit: 10 },
           });
-          setVehicles(response.data);
-          setPagination(response.pagination);
+          setVehicles(response.data || []);
+          setPagination(response.pagination || DEFAULT_PAGINATION);
         }
       } catch (err) {
         if (err instanceof ApiClientError) {
@@ -210,7 +212,7 @@ export const CatalogPage: React.FC = () => {
                 Available Inventory
               </span>
               <span className="text-2xl font-bold font-mono text-charcoal-primary">
-                {pagination.total} Units
+                {pagination?.total ?? 0} Units
               </span>
             </div>
           </div>
@@ -259,10 +261,11 @@ export const CatalogPage: React.FC = () => {
         />
 
         {/* Pagination Navigation */}
-        {!loading && pagination.totalPages > 1 && (
+        {!loading && (pagination?.totalPages ?? 0) > 1 && (
           <div className="pt-6 border-t border-surface-border flex items-center justify-between">
             <span className="text-xs text-charcoal-secondary">
-              Page {pagination.page} of {pagination.totalPages} ({pagination.total} vehicles)
+              Page {pagination?.page ?? 1} of {pagination?.totalPages ?? 1} (
+              {pagination?.total ?? 0} vehicles)
             </span>
             <div className="flex items-center gap-2">
               <Button
@@ -276,8 +279,8 @@ export const CatalogPage: React.FC = () => {
               <Button
                 variant="outline"
                 size="sm"
-                disabled={currentPage >= pagination.totalPages}
-                onClick={() => setCurrentPage(p => Math.min(pagination.totalPages, p + 1))}
+                disabled={currentPage >= (pagination?.totalPages ?? 1)}
+                onClick={() => setCurrentPage(p => Math.min(pagination?.totalPages ?? 1, p + 1))}
               >
                 Next
               </Button>

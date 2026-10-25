@@ -61,7 +61,8 @@ export interface ApiResponse<T> {
 export interface PaginatedResponse<T> {
   success: true;
   data: T[];
-  pagination: Pagination;
+  pagination?: Pagination;
+  meta?: Pagination;
 }
 
 export interface ApiErrorDetail {
