@@ -266,3 +266,24 @@ Hard boundary: Do not deploy the application. Do not start Phase 05 or introduce
   - Linter: 0 errors across backend and frontend.
   - Typecheck: 0 errors across backend and frontend (`tsc --noEmit`).
   - Production build: `npm run build` completed in 2.92s with optimized bundles.
+
+### Phase 04 Local Environment Verification & Admin Bootstrap
+
+- **Local Environment Configuration:**
+  - Created local-only `backend/.env` targeting local development MongoDB (`mongodb://127.0.0.1:27017/dealership_dev`), isolated test database (`dealership_test`), JWT secret, and administrator seed variables.
+  - Verified `backend/.env` is strictly ignored by `.gitignore` (line 13) and never tracked by Git.
+- **Administrator Provisioning:**
+  - Executed authentic CLI admin seed: `npm run seed:admin`.
+  - Verified idempotency: subsequent seed run skipped provisioning without error.
+  - Confirmed database contains exactly 1 admin user with bcrypt-hashed credentials and role `admin`.
+- **Live Server Execution:**
+  - Started backend API dev server (`http://localhost:5000`, connected to local MongoDB).
+  - Started frontend Vite dev server (`http://localhost:5173/`).
+- **End-to-End Workflow Verification:**
+  - Verified 10 real workflows against live local server: public catalog listing, customer self-registration (`POST /api/auth/register`), RBAC rejection for customer creating vehicle (`403 Forbidden`), admin login (`POST /api/auth/login`), admin vehicle creation (`POST /api/vehicles`), public search/filtering (`GET /api/vehicles/search`), authenticated customer purchase (`POST /api/vehicles/:id/purchase`), admin vehicle restock (`POST /api/vehicles/:id/restock`), admin vehicle edit (`PUT /api/vehicles/:id`), and admin vehicle deletion (`DELETE /api/vehicles/:id`).
+- **Quality Gates:**
+  - `format:check`: Passed with 0 issues.
+  - `lint`: Passed with 0 errors.
+  - `typecheck`: Passed with 0 errors.
+  - `test`: All 192 tests passing (121 backend + 71 frontend).
+  - `build`: Production build compiled cleanly with exit code 0.
