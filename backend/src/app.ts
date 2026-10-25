@@ -10,36 +10,77 @@ import { AppError } from './utils/errors.js';
 
 export const app = express();
 
-// Security and utility middleware
-app.use(helmet());
+// Safe origin matching regex patterns
+export const VERCEL_PROJECT_ORIGIN_REGEX =
+  /^https:\/\/incubyte-assessment(-[a-z0-9-]+)?\.vercel\.app$/i;
+export const LOCALHOST_ORIGIN_REGEX = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
-const configuredOrigins = env.CLIENT_URL
-  ? env.CLIENT_URL.split(',')
-      .map(url => url.trim().replace(/\/$/, ''))
-      .filter(Boolean)
-  : ['http://localhost:5173'];
+const DEFAULT_ALLOWED_ORIGINS = [
+  'https://incubyte-assessment-ruby.vercel.app',
+  'http://localhost:5173',
+];
 
+export const configuredOrigins = [
+  ...DEFAULT_ALLOWED_ORIGINS,
+  ...(env.CLIENT_URL
+    ? env.CLIENT_URL.split(',')
+        .map(url => url.trim().replace(/\/$/, ''))
+        .filter(Boolean)
+    : []),
+];
+
+export function isAllowedOrigin(origin: string): boolean {
+  if (!origin) return false;
+  const normalized = origin.trim().replace(/\/$/, '');
+
+  // 1. Explicit configured origins (env.CLIENT_URL or default production domain)
+  if (configuredOrigins.includes(normalized)) {
+    return true;
+  }
+
+  // 2. Legitimate Vercel production & preview deployment URLs for this project
+  if (VERCEL_PROJECT_ORIGIN_REGEX.test(normalized)) {
+    return true;
+  }
+
+  // 3. Localhost development origins
+  if (LOCALHOST_ORIGIN_REGEX.test(normalized)) {
+    return true;
+  }
+
+  return false;
+}
+
+export const corsOptions: cors.CorsOptions = {
+  origin: (requestOrigin, callback) => {
+    // Allow non-browser requests with no origin (e.g. mobile apps, curl, uptime monitors, health checks)
+    if (!requestOrigin) {
+      return callback(null, true);
+    }
+
+    if (isAllowedOrigin(requestOrigin)) {
+      return callback(null, true);
+    }
+
+    // Unapproved origins are omitted from Access-Control-Allow-Origin
+    return callback(null, false);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400,
+  optionsSuccessStatus: 204,
+};
+
+// Mount CORS middleware at the very top of the stack before routes and other middleware
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// Security headers with cross-origin resource policy permitting cross-origin API consumption
 app.use(
-  cors({
-    origin: (requestOrigin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, uptime/health checks)
-      if (!requestOrigin) {
-        return callback(null, true);
-      }
-      const normalized = requestOrigin.replace(/\/$/, '');
-      if (
-        configuredOrigins.includes('*') ||
-        configuredOrigins.includes(normalized) ||
-        configuredOrigins.some(
-          allowed => allowed.includes('.vercel.app') && normalized.endsWith('.vercel.app'),
-        ) ||
-        (env.NODE_ENV !== 'production' && normalized.includes('localhost'))
-      ) {
-        return callback(null, true);
-      }
-      return callback(null, false);
-    },
-    credentials: true,
+  helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
   }),
 );
 app.use(express.json());
