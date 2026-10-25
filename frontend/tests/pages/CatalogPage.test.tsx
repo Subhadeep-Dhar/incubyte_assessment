@@ -188,4 +188,41 @@ describe('CatalogPage (Catalog, Search & Purchasing Flow Integration Test)', () 
 
     expect(await screen.findByText(/the requested vehicle is out of stock/i)).toBeInTheDocument();
   });
+
+  it('renders empty showroom with proper empty state when inventory contains zero vehicles', async () => {
+    vi.spyOn(apiClient, 'getPaginated').mockResolvedValueOnce({
+      data: [],
+      pagination: { page: 1, limit: 10, total: 0, totalPages: 0 },
+    });
+
+    render(
+      <MemoryRouter>
+        <CatalogPage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId('catalog-heading')).toBeInTheDocument();
+    expect(await screen.findByText(/no vehicles match your search/i)).toBeInTheDocument();
+    expect(screen.getByText('0 Units')).toBeInTheDocument();
+  });
+
+  it('renders empty showroom without throwing when backend returns empty inventory with meta response', async () => {
+    // Exact reproduction: when pagination property is missing from envelope response
+    vi.spyOn(apiClient, 'getPaginated').mockResolvedValueOnce({
+      data: [],
+      pagination: undefined as any,
+    });
+
+    render(
+      <MemoryRouter>
+        <CatalogPage />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByTestId('catalog-heading')).toBeInTheDocument();
+    expect(await screen.findByText(/no vehicles match your search/i)).toBeInTheDocument();
+    expect(screen.getByText('0 Units')).toBeInTheDocument();
+  });
 });
+
+

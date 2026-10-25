@@ -167,4 +167,26 @@ describe('ApiClient (Unit & Contract Test)', () => {
       expect(apiErr.message).toContain('Failed to fetch');
     }
   });
+
+  it('maps backend meta field to pagination when backend returns authentic PaginatedResult', async () => {
+    const backendResponse = {
+      success: true,
+      data: [],
+      meta: { page: 1, limit: 10, total: 0, totalPages: 0 },
+    };
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => backendResponse,
+    } as unknown as Response);
+
+    const result = await apiClient.getPaginated('/vehicles');
+
+    expect(result.data).toEqual([]);
+    expect(result.pagination).toBeDefined();
+    expect(result.pagination.total).toBe(0);
+    expect(result.pagination).toEqual({ page: 1, limit: 10, total: 0, totalPages: 0 });
+  });
 });
+
