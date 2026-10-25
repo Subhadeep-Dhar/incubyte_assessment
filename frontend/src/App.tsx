@@ -33,7 +33,7 @@ export const AppRoutes: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-charcoal-secondary">
           <div className="flex items-center space-x-2">
             <span className="w-2 h-2 rounded-full bg-forest-700" />
-            <span className="font-semibold text-charcoal-primary">Incubyte Dealership System</span>
+            <span className="font-semibold text-charcoal-primary">AURELIA Inventory System</span>
             <span>&copy; {new Date().getFullYear()}</span>
           </div>
           <div className="text-charcoal-muted font-mono text-[11px]">

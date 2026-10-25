@@ -41,6 +41,19 @@ describe('App Routing & Full Journey Integration Tests (Subphase 04F)', () => {
     expect(await screen.findByText('Aston Martin DB12')).toBeInTheDocument();
   });
 
+  it('renders AURELIA Inventory System branding in application footer', () => {
+    render(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/']}>
+          <AppRoutes />
+        </MemoryRouter>
+      </AuthProvider>,
+    );
+
+    expect(screen.getByText(/aurelia inventory system/i)).toBeInTheDocument();
+    expect(screen.queryByText(/incubyte dealership system/i)).not.toBeInTheDocument();
+  });
+
   it('renders login page when navigating to /login', async () => {
     render(
       <AuthProvider>

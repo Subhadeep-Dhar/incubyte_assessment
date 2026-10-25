@@ -1,4 +1,5 @@
 import React from 'react';
+import { CarFront } from 'lucide-react';
 import { Vehicle } from '../../types/api';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -46,9 +47,13 @@ export const VehicleCard: React.FC<VehicleCardProps> = ({
             loading="lazy"
           />
         ) : (
-          <div className="text-center p-4">
-            <span className="text-3xl filter grayscale opacity-40 select-none">🏎️</span>
-            <span className="block text-[11px] font-mono uppercase tracking-widest text-charcoal-muted mt-1">
+          <div className="text-center p-4 flex flex-col items-center justify-center">
+            <CarFront
+              data-testid="vehicle-fallback-icon"
+              className="w-10 h-10 text-charcoal-muted/60 stroke-[1.5]"
+              aria-hidden="true"
+            />
+            <span className="block text-[11px] font-mono uppercase tracking-widest text-charcoal-muted mt-2">
               {vehicle.category}
             </span>
           </div>

@@ -93,6 +93,23 @@ describe('Shared UI Primitives (Component Tests)', () => {
       expect(alert).toBeInTheDocument();
       expect(screen.getByText(/order #123 confirmed/i)).toBeInTheDocument();
     });
+
+    it('renders accessible close button with Lucide X icon and without raw unicode cross', () => {
+      const handleClose = vi.fn();
+      render(
+        <Alert variant="warning" title="Warning Notice" onClose={handleClose}>
+          Low inventory threshold reached.
+        </Alert>,
+      );
+
+      const closeBtn = screen.getByRole('button', { name: /close alert/i });
+      expect(closeBtn).toBeInTheDocument();
+      expect(screen.getByTestId('alert-close-icon')).toBeInTheDocument();
+      expect(screen.queryByText('✕')).not.toBeInTheDocument();
+
+      fireEvent.click(closeBtn);
+      expect(handleClose).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('Input Component', () => {

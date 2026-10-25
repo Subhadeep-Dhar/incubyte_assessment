@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
+import { X } from 'lucide-react';
 import { Vehicle } from '../../types/api';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -56,7 +57,7 @@ export const VehicleDetailModal: React.FC<VehicleDetailModalProps> = ({
                 aria-label="Close"
                 className="text-charcoal-muted hover:text-charcoal-primary p-1.5 rounded-md hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
               >
-                ✕
+                <X className="w-4 h-4" aria-hidden="true" />
               </button>
             </Dialog.Close>
           </div>

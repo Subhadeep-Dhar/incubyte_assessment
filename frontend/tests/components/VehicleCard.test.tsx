@@ -26,6 +26,13 @@ describe('VehicleCard Component (Unit & Presentation Test)', () => {
     expect(screen.getByText('$90,000')).toBeInTheDocument();
   });
 
+  it('renders Lucide placeholder icon when no image URL is provided and does not render emoji', () => {
+    render(<VehicleCard vehicle={mockVehicle} onPurchase={vi.fn()} />);
+
+    expect(screen.queryByText('🏎️')).not.toBeInTheDocument();
+    expect(screen.getByTestId('vehicle-fallback-icon')).toBeInTheDocument();
+  });
+
   it('renders in-stock badge when stock is 3 or more', () => {
     render(<VehicleCard vehicle={mockVehicle} onPurchase={vi.fn()} />);
 

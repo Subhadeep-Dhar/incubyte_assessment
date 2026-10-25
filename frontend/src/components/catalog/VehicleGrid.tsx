@@ -1,4 +1,5 @@
 import React from 'react';
+import { PackageSearch, RotateCcw } from 'lucide-react';
 import { Vehicle } from '../../types/api';
 import { VehicleCard } from './VehicleCard';
 import { Skeleton } from '../ui/Skeleton';
@@ -51,8 +52,12 @@ export const VehicleGrid: React.FC<VehicleGridProps> = ({
   if (vehicles.length === 0) {
     return (
       <div className="rounded-xl border border-dashed border-surface-border bg-white p-12 text-center max-w-lg mx-auto my-8 space-y-4 shadow-xs">
-        <div className="w-12 h-12 rounded-full bg-surface-muted text-charcoal-muted flex items-center justify-center mx-auto text-xl">
-          🔍
+        <div className="w-12 h-12 rounded-full bg-surface-muted text-charcoal-secondary flex items-center justify-center mx-auto">
+          <PackageSearch
+            data-testid="empty-inventory-icon"
+            className="w-6 h-6 text-charcoal-secondary stroke-[1.75]"
+            aria-hidden="true"
+          />
         </div>
         <div className="space-y-1">
           <h3 className="text-base font-bold text-charcoal-primary">
@@ -64,7 +69,8 @@ export const VehicleGrid: React.FC<VehicleGridProps> = ({
         </div>
         {onResetFilters && (
           <Button variant="outline" size="sm" onClick={onResetFilters} className="text-xs mt-2">
-            Reset Filters
+            <RotateCcw className="w-3.5 h-3.5 mr-1.5" aria-hidden="true" />
+            <span>Reset Filters</span>
           </Button>
         )}
       </div>

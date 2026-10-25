@@ -137,6 +137,17 @@ describe('Authentication Pages & Route Guards (Component & Flow Tests)', () => {
       expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
     });
 
+    it('renders AURELIA product branding and eliminates Incubyte references', () => {
+      render(
+        <MemoryRouter>
+          <RegisterPage />
+        </MemoryRouter>,
+      );
+
+      expect(screen.getByText(/join aurelia/i)).toBeInTheDocument();
+      expect(screen.queryByText(/incubyte/i)).not.toBeInTheDocument();
+    });
+
     it('validates password complexity (min 8 chars, 1 uppercase, 1 lowercase, 1 number)', async () => {
       render(
         <MemoryRouter>

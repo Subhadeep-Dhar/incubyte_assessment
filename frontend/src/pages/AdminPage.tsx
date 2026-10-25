@@ -7,6 +7,7 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Alert } from '../components/ui/Alert';
 import { formatPrice } from '../utils/format';
+import { Plus, Pencil, PackagePlus, Trash2, X } from 'lucide-react';
 
 export const AdminPage: React.FC = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -269,7 +270,7 @@ export const AdminPage: React.FC = () => {
         <header className="border-b border-surface-border pb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <span className="text-xs font-mono font-semibold uppercase tracking-widest text-forest-700">
-              Dealership Administration
+              Automotive Inventory Administration
             </span>
             <h1
               data-testid="admin-heading"
@@ -289,7 +290,8 @@ export const AdminPage: React.FC = () => {
             onClick={handleOpenCreateModal}
             className="shrink-0 text-sm shadow-xs"
           >
-            + Add New Vehicle
+            <Plus className="w-4 h-4 mr-1.5" aria-hidden="true" />
+            <span>Add New Vehicle</span>
           </Button>
         </header>
 
@@ -381,7 +383,8 @@ export const AdminPage: React.FC = () => {
                             onClick={() => handleOpenEditModal(v)}
                             className="text-xs px-2.5 py-1"
                           >
-                            Edit
+                            <Pencil className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
+                            <span>Edit</span>
                           </Button>
                           <Button
                             size="sm"
@@ -389,7 +392,8 @@ export const AdminPage: React.FC = () => {
                             onClick={() => handleOpenRestockModal(v)}
                             className="text-xs px-2.5 py-1"
                           >
-                            Restock
+                            <PackagePlus className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
+                            <span>Restock</span>
                           </Button>
                           <Button
                             size="sm"
@@ -397,7 +401,8 @@ export const AdminPage: React.FC = () => {
                             onClick={() => handleOpenDeleteModal(v)}
                             className="text-xs px-2.5 py-1"
                           >
-                            Delete
+                            <Trash2 className="w-3.5 h-3.5 mr-1" aria-hidden="true" />
+                            <span>Delete</span>
                           </Button>
                         </div>
                       </td>
@@ -422,13 +427,17 @@ export const AdminPage: React.FC = () => {
                   <Dialog.Description className="text-xs text-charcoal-secondary mt-1">
                     {editingVehicle
                       ? 'Modify existing vehicle pricing, specifications, and attributes.'
-                      : 'Provision a new vehicle entry into the active dealership catalog.'}
+                      : 'Provision a new vehicle entry into the active automotive catalog.'}
                   </Dialog.Description>
                 </div>
                 <Dialog.Close asChild>
-                  <Button variant="outline" size="sm" className="p-1 text-charcoal-muted">
-                    ✕
-                  </Button>
+                  <button
+                    type="button"
+                    aria-label="Close dialog"
+                    className="p-1.5 rounded-md text-charcoal-muted hover:text-charcoal-primary hover:bg-surface-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700"
+                  >
+                    <X className="w-4 h-4" aria-hidden="true" />
+                  </button>
                 </Dialog.Close>
               </div>
 

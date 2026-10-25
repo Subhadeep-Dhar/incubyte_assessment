@@ -8,6 +8,7 @@ import { VehicleGrid } from '../components/catalog/VehicleGrid';
 import { VehicleDetailModal } from '../components/catalog/VehicleDetailModal';
 import { Alert } from '../components/ui/Alert';
 import { Button } from '../components/ui/Button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const DEFAULT_PAGINATION: Pagination = {
   page: 1,
@@ -274,7 +275,8 @@ export const CatalogPage: React.FC = () => {
                 disabled={currentPage <= 1}
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               >
-                Previous
+                <ChevronLeft className="w-4 h-4 mr-1" aria-hidden="true" />
+                <span>Previous</span>
               </Button>
               <Button
                 variant="outline"
@@ -282,7 +284,8 @@ export const CatalogPage: React.FC = () => {
                 disabled={currentPage >= (pagination?.totalPages ?? 1)}
                 onClick={() => setCurrentPage(p => Math.min(pagination?.totalPages ?? 1, p + 1))}
               >
-                Next
+                <span>Next</span>
+                <ChevronRight className="w-4 h-4 ml-1" aria-hidden="true" />
               </Button>
             </div>
           </div>

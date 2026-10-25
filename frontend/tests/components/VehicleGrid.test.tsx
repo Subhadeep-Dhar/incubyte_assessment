@@ -42,6 +42,8 @@ describe('VehicleGrid Component (Layout & State Test)', () => {
     render(<VehicleGrid vehicles={[]} loading={false} onResetFilters={handleReset} />);
 
     expect(screen.getByText(/no vehicles match your search/i)).toBeInTheDocument();
+    expect(screen.queryByText('🔍')).not.toBeInTheDocument();
+    expect(screen.getByTestId('empty-inventory-icon')).toBeInTheDocument();
     const resetBtn = screen.getByRole('button', { name: /reset filters/i });
     expect(resetBtn).toBeInTheDocument();
 

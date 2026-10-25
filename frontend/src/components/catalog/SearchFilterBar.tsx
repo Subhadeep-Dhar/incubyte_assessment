@@ -1,4 +1,5 @@
 import React from 'react';
+import { Search, RotateCcw } from 'lucide-react';
 import { VEHICLE_CATEGORIES } from '../../types/api';
 import { Button } from '../ui/Button';
 
@@ -56,13 +57,17 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             Search Inventory
           </label>
           <div className="relative">
+            <Search
+              className="w-4 h-4 text-charcoal-muted absolute left-3 top-3 pointer-events-none"
+              aria-hidden="true"
+            />
             <input
               id="filter-search"
               type="text"
               value={filters.keyword}
               onChange={handleKeywordChange}
               placeholder="Search make or model (e.g. BMW, SUV)..."
-              className="w-full px-3.5 py-2 text-sm rounded-md border border-surface-border bg-white text-charcoal-primary placeholder:text-charcoal-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 transition-colors"
+              className="w-full pl-9 pr-3.5 py-2 text-sm rounded-md border border-surface-border bg-white text-charcoal-primary placeholder:text-charcoal-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-forest-700 transition-colors"
             />
           </div>
         </div>
@@ -134,7 +139,8 @@ export const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             disabled={!hasActiveFilters}
             className="w-full text-xs"
           >
-            Reset Filters
+            <RotateCcw className="w-3.5 h-3.5 mr-1.5" aria-hidden="true" />
+            <span>Reset Filters</span>
           </Button>
         </div>
       </div>

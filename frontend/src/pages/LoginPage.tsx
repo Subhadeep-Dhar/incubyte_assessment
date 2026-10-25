@@ -68,7 +68,7 @@ export const LoginPage: React.FC = () => {
             Sign In to Your Account
           </h2>
           <p className="text-sm text-charcoal-secondary">
-            Access inventory purchasing, vehicle history, and dealership services.
+            Access inventory purchasing, vehicle reservations, and automotive services.
           </p>
         </div>
 

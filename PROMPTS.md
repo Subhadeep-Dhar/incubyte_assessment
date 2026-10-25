@@ -313,3 +313,38 @@ Hard boundary: Do not deploy the application. Do not start Phase 05 or introduce
   - `lint`: 0 errors.
   - `format:check`: 100% Prettier compliant.
   - `build`: 0 errors (compiled in 3.09s).
+
+### Phase 04 — UI Polish: Independent Branding and Consistent Icons
+
+- **Prompt Request:**
+  - Establish **AURELIA** as the proposed independent automotive product identity throughout the UI.
+  - Remove repeated Incubyte branding from product interfaces (navbar, footer, registration, login, and admin contextual labels) while strictly preserving required assignment documentation, attribution, and AI usage records.
+  - Replace all emoji-based interface symbols with accessible, consistent Lucide icons (`CarFront`, `PackageSearch`, `Search`, `RotateCcw`, `ShieldCheck`, `UserRound`, `LogOut`, `LogIn`, `Plus`, `Pencil`, `Trash2`, `PackagePlus`, `ChevronLeft`, `ChevronRight`, `X`, `CheckCircle2`, `AlertCircle`, `AlertTriangle`, `Info`).
+- **Strict TDD Implementation:**
+  - **RED:**
+    - Updated `Navbar.test.tsx` to assert "AURELIA" brand identity and absence of "Incubyte Dealership".
+    - Added test in `App.test.tsx` verifying "AURELIA Inventory System" in application footer.
+    - Added test in `AuthPages.test.tsx` asserting "Join AURELIA" and absence of "Incubyte" references on registration page.
+    - Added test in `VehicleCard.test.tsx` asserting Lucide fallback icon (`data-testid="vehicle-fallback-icon"`) and absence of `🏎️` emoji.
+    - Updated `VehicleGrid.test.tsx` to assert Lucide empty inventory icon (`data-testid="empty-inventory-icon"`) and absence of `🔍` emoji.
+    - Updated `ui.test.tsx` to assert Alert variant icons and accessible Lucide `X` close button (`data-testid="alert-close-icon"`) without unicode `✕`.
+    - Executed targeted suite and verified clean behavioral failures across all 6 test files.
+  - **GREEN / REFACTOR:**
+    - Updated `Navbar.tsx` with "AURELIA" wordmark, `CarFront` inventory icon, `ShieldCheck` admin portal icon, `UserRound` customer identity indicator, `LogOut` sign out button, and `LogIn` button.
+    - Updated `App.tsx` footer with "AURELIA Inventory System".
+    - Updated `RegisterPage.tsx` and `LoginPage.tsx` with refined automotive copywriting.
+    - Updated `AdminPage.tsx` header with "Automotive Inventory Administration", `Plus` on Add New Vehicle, `Pencil` on Edit, `PackagePlus` on Restock, `Trash2` on Delete, and Lucide `X` on dialog close buttons.
+    - Updated `VehicleCard.tsx` with Lucide `CarFront` fallback placeholder.
+    - Updated `VehicleGrid.tsx` with Lucide `PackageSearch` empty state icon and `RotateCcw` filter reset button.
+    - Updated `SearchFilterBar.tsx` with Lucide `Search` icon and `RotateCcw` reset button.
+    - Updated `VehicleDetailModal.tsx` and `Alert.tsx` with Lucide `X` close icons and variant feedback icons.
+    - Updated `index.html` title and description to AURELIA Automotive Inventory.
+    - Formatted code to 100% Prettier compliance.
+- **Verification Gates:**
+  - `test:frontend`: 79 / 79 passing (12 test files).
+  - `test:backend`: 121 / 121 passing (17 test files).
+  - Total tests: 200 / 200 passing across repository.
+  - `typecheck`: 0 errors.
+  - `lint`: 0 errors (0 warnings except standard react-refresh export warning).
+  - `format:check`: 100% Prettier compliant.
+  - `build`: Production build successful in 4.85s.

@@ -32,7 +32,8 @@ describe('Navbar Component (Layout & Navigation Test)', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText(/incubyte dealership/i)).toBeInTheDocument();
+    expect(screen.getByText(/^aurelia$/i)).toBeInTheDocument();
+    expect(screen.queryByText(/incubyte dealership/i)).not.toBeInTheDocument();
     expect(screen.getByRole('link', { name: /inventory/i })).toBeInTheDocument();
   });
 

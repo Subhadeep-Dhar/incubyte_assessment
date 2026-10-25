@@ -81,7 +81,7 @@ export const RegisterPage: React.FC = () => {
             Create Account
           </h2>
           <p className="text-sm text-charcoal-secondary">
-            Join Incubyte Dealership to reserve and purchase verified luxury vehicles.
+            Join AURELIA to reserve and purchase verified luxury vehicles.
           </p>
         </div>
 
