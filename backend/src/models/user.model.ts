@@ -6,6 +6,7 @@ export type UserRole = 'customer' | 'admin';
 export interface IUser extends Document {
   name: string;
   email: string;
+  password?: string;
   passwordHash: string;
   role: UserRole;
   createdAt: Date;

@@ -17,6 +17,10 @@ const envSchema = z.object({
     .min(16, 'JWT_SECRET must be at least 16 characters long')
     .default('default_jwt_secret_must_be_overridden_in_production'),
   JWT_EXPIRES_IN: z.string().default('24h'),
+  ADMIN_INITIAL_NAME: z.string().optional(),
+  ADMIN_INITIAL_EMAIL: z.string().optional(),
+  ADMIN_INITIAL_PASSWORD: z.string().optional(),
+  ADMIN_RESET_PASSWORD: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

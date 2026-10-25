@@ -84,4 +84,88 @@ describe('Admin Provisioning CLI Seed (Integration Test)', () => {
     expect(loginResponse.body.data.user.role).toBe('admin');
     expect(typeof loginResponse.body.data.token).toBe('string');
   });
+
+  it('should securely update administrator password when resetPassword is true', async () => {
+    // Initial provisioning
+    await seedAdmin(adminCredentials);
+
+    // Reset password with explicit resetPassword option
+    const newPassword = 'NewSecureAdminPassword456!';
+    const resetRun = await seedAdmin({
+      ...adminCredentials,
+      password: newPassword,
+      resetPassword: true,
+    });
+
+    expect(resetRun.status).toBe('updated');
+
+    // Verify database has new password and rejects old password
+    const dbUser = await User.findOne({ email: adminCredentials.email });
+    expect(await dbUser?.comparePassword(newPassword)).toBe(true);
+    expect(await dbUser?.comparePassword(adminCredentials.password)).toBe(false);
+
+    // Verify login with new password succeeds
+    const newLoginResponse = await request(app).post('/api/auth/login').send({
+      email: adminCredentials.email,
+      password: newPassword,
+    });
+    expect(newLoginResponse.status).toBe(200);
+    expect(newLoginResponse.body.data.user.role).toBe('admin');
+
+    // Verify login with old password fails
+    const oldLoginResponse = await request(app).post('/api/auth/login').send({
+      email: adminCredentials.email,
+      password: adminCredentials.password,
+    });
+    expect(oldLoginResponse.status).toBe(401);
+    expect(oldLoginResponse.body.error.message).toBe('Invalid email or password');
+  });
+
+  it('should securely update administrator password when ADMIN_RESET_PASSWORD=true environment variable is set', async () => {
+    await seedAdmin(adminCredentials);
+
+    const originalEnv = process.env.ADMIN_RESET_PASSWORD;
+    process.env.ADMIN_RESET_PASSWORD = 'true';
+
+    try {
+      const newPassword = 'EnvResetPassword789!';
+      const resetRun = await seedAdmin({
+        ...adminCredentials,
+        password: newPassword,
+      });
+
+      expect(resetRun.status).toBe('updated');
+
+      const loginResponse = await request(app).post('/api/auth/login').send({
+        email: adminCredentials.email,
+        password: newPassword,
+      });
+      expect(loginResponse.status).toBe(200);
+      expect(loginResponse.body.data.user.role).toBe('admin');
+    } finally {
+      process.env.ADMIN_RESET_PASSWORD = originalEnv;
+    }
+  });
+
+  it('should reject login for non-existent admin or wrong password with generic error message', async () => {
+    await seedAdmin(adminCredentials);
+
+    // Wrong password
+    const wrongPasswordRes = await request(app).post('/api/auth/login').send({
+      email: adminCredentials.email,
+      password: 'IncorrectPassword!',
+    });
+    expect(wrongPasswordRes.status).toBe(401);
+    expect(wrongPasswordRes.body.error.code).toBe('INVALID_CREDENTIALS');
+    expect(wrongPasswordRes.body.error.message).toBe('Invalid email or password');
+
+    // Unknown email
+    const unknownEmailRes = await request(app).post('/api/auth/login').send({
+      email: 'nonexistent.admin@dealership.com',
+      password: adminCredentials.password,
+    });
+    expect(unknownEmailRes.status).toBe(401);
+    expect(unknownEmailRes.body.error.code).toBe('INVALID_CREDENTIALS');
+    expect(unknownEmailRes.body.error.message).toBe('Invalid email or password');
+  });
 });

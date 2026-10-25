@@ -15,7 +15,9 @@
     "lint": "eslint src/ tests/",
     "typecheck": "tsc --noEmit",
     "seed:admin": "tsx src/scripts/seed-admin.ts",
-    "seed:admin:prod": "node dist/scripts/seed-admin.js"
+    "seed:admin:prod": "node dist/scripts/seed-admin.js",
+    "admin:reset-password": "tsx src/scripts/seed-admin.ts --reset-password",
+    "admin:reset-password:prod": "node dist/scripts/seed-admin.js --reset-password"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

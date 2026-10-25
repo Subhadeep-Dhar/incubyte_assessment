@@ -21,6 +21,8 @@
     "test": "npm run test:backend && npm run test:frontend",
     "seed:admin": "npm run seed:admin --workspace=backend",
     "seed:admin:prod": "npm run seed:admin:prod --workspace=backend",
+    "admin:reset-password": "npm run admin:reset-password --workspace=backend",
+    "admin:reset-password:prod": "npm run admin:reset-password:prod --workspace=backend",
     "lint:backend": "npm run lint --workspace=backend",
     "lint:frontend": "npm run lint --workspace=frontend",
     "lint": "npm run lint:backend && npm run lint:frontend",

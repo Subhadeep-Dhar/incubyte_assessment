@@ -10,6 +10,11 @@ import { AppError } from './utils/errors.js';
 
 export const app = express();
 
+// Trust the first front-facing reverse proxy hop (Render, Cloudflare)
+// This ensures Express reads the real client IP from X-Forwarded-For,
+// prevents shared rate-limit buckets across users, and resolves ERR_ERL_UNEXPECTED_X_FORWARDED_FOR.
+app.set('trust proxy', 1);
+
 // Safe origin matching regex patterns
 export const VERCEL_PROJECT_ORIGIN_REGEX =
   /^https:\/\/incubyte-assessment(-[a-z0-9-]+)?\.vercel\.app$/i;
