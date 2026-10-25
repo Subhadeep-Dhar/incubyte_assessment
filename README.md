@@ -22,6 +22,12 @@ The application is structured as a decoupled full-stack architecture adhering st
 - **Strict Role-Based Access Control (RBAC):** High security separation between customer interactions and administrative operations, with zero risk of privilege escalation.
 - **Editorial Automotive Craftsmanship:** Clean, accessible UI (WCAG AA compliant) with restrained typography, warm neutral surfaces, and signature Forest Green accents.
 
+### Live Production Deployments
+
+- **Frontend Application (Vercel):** [https://incubyte-assessment-ruby.vercel.app](https://incubyte-assessment-ruby.vercel.app)
+- **Backend REST API (Render):** [https://aurelia-backend-uxp8.onrender.com](https://aurelia-backend-uxp8.onrender.com)
+- **Health Check Endpoint:** [https://aurelia-backend-uxp8.onrender.com/health](https://aurelia-backend-uxp8.onrender.com/health)
+
 ---
 
 ## 2. Technology Stack
@@ -189,6 +195,13 @@ _Configuration variables in `backend/.env`:_
 
 - If an account with `ADMIN_INITIAL_EMAIL` already exists, the script safely exits without modifying existing passwords or data.
 - Initial passwords are never hardcoded and never logged to stdout or persistent files.
+- The backend automatically provisions or verifies the initial administrator on server startup (`server.ts`) when `ADMIN_INITIAL_EMAIL` and `ADMIN_INITIAL_PASSWORD` are configured.
+- To safely reset an administrator password without account duplication:
+  ```bash
+  # CLI command with explicit reset flag
+  npm run admin:reset-password
+  # Or configure ADMIN_RESET_PASSWORD=true in environment variables
+  ```
 
 ---
 
@@ -260,4 +273,4 @@ In accordance with Incubyte's assessment guidelines and commitment to transparen
    ```
 3. **Raw Prompts Log:** Complete, unedited transcripts of all AI interactions are preserved chronologically in [`PROMPTS.md`](./PROMPTS.md).
 4. **Human Ownership & Craftsmanship:** While AI was utilized for scaffolding, boilerplate generation, and rapid feedback loops, all architectural decisions, database models, test assertions, security boundaries, and UI designs are governed by rigorous human judgment and verified through executable test suites.
-5. **Phase 04 Verification:** 79 frontend tests (across 12 test files) and 121 backend integration/unit tests (across 17 test files) pass 100% locally with zero errors, zero typecheck issues, and zero formatting discrepancies.
+5. **Final Acceptance Verification:** 222 automated tests passing 100% (143 backend tests across 19 test files + 79 frontend tests across 12 test files). Production frontend deployed on Vercel and production backend deployed on Render with MongoDB Atlas cluster connectivity. Zero lint errors, zero typecheck errors, and 100% Prettier formatting compliance.
