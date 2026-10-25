@@ -287,3 +287,29 @@ Hard boundary: Do not deploy the application. Do not start Phase 05 or introduce
   - `typecheck`: Passed with 0 errors.
   - `test`: All 192 tests passing (121 backend + 71 frontend).
   - `build`: Production build compiled cleanly with exit code 0.
+
+### Phase 04 Targeted Showroom White-Screen Bug Fix
+
+- **Root Cause Analysis:**
+  - Browser runtime error: `Uncaught TypeError: Cannot read properties of undefined (reading 'total') at CatalogPage (CatalogPage.tsx:213:29)`.
+  - Backend `GET /api/vehicles` returns `{ success: true, data: [...], meta: { page, limit, total, totalPages } }` per Phase 03 integration test suite.
+  - Frontend `apiClient.getPaginated` was expecting `envelope.pagination` instead of mapping `envelope.meta || envelope.pagination`, resolving `pagination: undefined`.
+  - `CatalogPage.tsx` directly assigned `setPagination(response.pagination)`, causing `pagination` state to become `undefined` and crashing on line 213 when accessing `pagination.total`.
+- **Strict TDD Implementation:**
+  - **RED (Commit `7a2c587`):**
+    - Added unit test in `frontend/tests/api/client.test.ts` testing mapping of backend `meta` field into `pagination`.
+    - Added integration tests in `frontend/tests/pages/CatalogPage.test.tsx` verifying empty showroom rendering and resilience when pagination is undefined.
+    - Verified exact behavioral failure: uncaught exception `TypeError: Cannot read properties of undefined (reading 'total') at CatalogPage.tsx:213`.
+  - **GREEN (Commit `fcd682f`):**
+    - Normalized `getPaginated` in `frontend/src/api/client.ts` to map `envelope.pagination || envelope.meta || defaultPagination`.
+    - Updated `PaginatedResponse<T>` in `frontend/src/types/api.ts` to type both `pagination` and `meta` fields.
+    - Hardened `CatalogPage.tsx` with `DEFAULT_PAGINATION` state fallback, safe optional chaining (`pagination?.total ?? 0`), and safe pagination controls.
+    - Added tests for in-flight loading skeletons and unexpected response handling.
+- **Verification Gates:**
+  - `test:frontend`: 75 / 75 passing (12 test files).
+  - `test:backend`: 121 / 121 passing (17 test files).
+  - Total tests: 196 / 196 passing across repository.
+  - `typecheck`: 0 errors.
+  - `lint`: 0 errors.
+  - `format:check`: 100% Prettier compliant.
+  - `build`: 0 errors (compiled in 3.09s).
