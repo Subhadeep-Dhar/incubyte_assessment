@@ -5,7 +5,9 @@ export async function connectDatabase(): Promise<typeof mongoose> {
   const uri = env.NODE_ENV === 'test' ? env.MONGODB_TEST_URI : env.MONGODB_URI;
 
   try {
-    const conn = await mongoose.connect(uri);
+    const conn = await mongoose.connect(uri, {
+      serverSelectionTimeoutMS: 10000,
+    });
     return conn;
   } catch (error) {
     console.error('Failed to connect to MongoDB:', error);

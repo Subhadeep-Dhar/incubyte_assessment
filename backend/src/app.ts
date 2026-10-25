@@ -12,9 +12,33 @@ export const app = express();
 
 // Security and utility middleware
 app.use(helmet());
+
+const configuredOrigins = env.CLIENT_URL
+  ? env.CLIENT_URL.split(',')
+      .map(url => url.trim().replace(/\/$/, ''))
+      .filter(Boolean)
+  : ['http://localhost:5173'];
+
 app.use(
   cors({
-    origin: env.CLIENT_URL,
+    origin: (requestOrigin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, uptime/health checks)
+      if (!requestOrigin) {
+        return callback(null, true);
+      }
+      const normalized = requestOrigin.replace(/\/$/, '');
+      if (
+        configuredOrigins.includes('*') ||
+        configuredOrigins.includes(normalized) ||
+        configuredOrigins.some(
+          allowed => allowed.includes('.vercel.app') && normalized.endsWith('.vercel.app'),
+        ) ||
+        (env.NODE_ENV !== 'production' && normalized.includes('localhost'))
+      ) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
     credentials: true,
   }),
 );
