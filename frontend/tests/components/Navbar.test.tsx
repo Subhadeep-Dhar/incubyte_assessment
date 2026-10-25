@@ -56,6 +56,7 @@ describe('Navbar Component (Layout & Navigation Test)', () => {
 
     expect(screen.getByRole('link', { name: /sign in/i })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: /register/i })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /my purchases/i })).not.toBeInTheDocument();
     expect(screen.queryByText(/admin portal/i)).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /sign out/i })).not.toBeInTheDocument();
   });
@@ -85,6 +86,7 @@ describe('Navbar Component (Layout & Navigation Test)', () => {
     );
 
     expect(screen.getByText(/sarah connor/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /my purchases/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /sign out/i })).toBeInTheDocument();
     expect(screen.queryByText(/admin portal/i)).not.toBeInTheDocument();
 

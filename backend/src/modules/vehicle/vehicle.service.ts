@@ -149,11 +149,20 @@ export class VehicleService {
     }
 
     try {
-      // Record purchase audit record
+      // Record purchase audit record with immutable vehicle snapshot
       const purchase = await Purchase.create({
         userId: new mongoose.Types.ObjectId(userId),
         vehicleId: updatedVehicle._id,
+        vehicleDetails: {
+          make: updatedVehicle.make,
+          model: updatedVehicle.model,
+          year: updatedVehicle.year,
+          category: updatedVehicle.category,
+          imageUrl: updatedVehicle.imageUrl,
+          description: updatedVehicle.description,
+        },
         priceAtPurchase: updatedVehicle.price,
+        quantity: 1,
         purchasedAt: new Date(),
       });
 
@@ -168,6 +177,69 @@ export class VehicleService {
       }).exec();
       throw auditError;
     }
+  }
+
+  /**
+   * Retrieves paginated purchase history for an authenticated user.
+   * Strict server-side user filtering ensures complete tenant isolation.
+   */
+  async getUserPurchases(
+    userId: string,
+    query?: { page?: number; limit?: number },
+  ): Promise<{
+    purchases: IPurchase[];
+    pagination: { page: number; limit: number; total: number; totalPages: number };
+  }> {
+    const page = Math.max(1, query?.page || 1);
+    const limit = Math.min(50, Math.max(1, query?.limit || 10));
+    const skip = (page - 1) * limit;
+
+    const userObjectId = new mongoose.Types.ObjectId(userId);
+    const [total, rawPurchases] = await Promise.all([
+      Purchase.countDocuments({ userId: userObjectId }).exec(),
+      Purchase.find({ userId: userObjectId })
+        .sort({ purchasedAt: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .populate('vehicleId')
+        .exec(),
+    ]);
+
+    // Backfill vehicleDetails if older record lacks snapshot
+    const purchases = rawPurchases.map(p => {
+      const doc = p.toObject() as unknown as IPurchase;
+      if (!doc.vehicleDetails && doc.vehicleId && typeof doc.vehicleId === 'object') {
+        const v = doc.vehicleId as unknown as {
+          make?: string;
+          model?: string;
+          year?: number;
+          category?: string;
+          imageUrl?: string;
+          description?: string;
+        };
+        doc.vehicleDetails = {
+          make: v.make || 'Unknown',
+          model: v.model || 'Vehicle',
+          year: v.year,
+          category: v.category || 'Sedan',
+          imageUrl: v.imageUrl,
+          description: v.description,
+        };
+      }
+      return doc;
+    });
+
+    const totalPages = Math.ceil(total / limit) || (total === 0 ? 0 : 1);
+
+    return {
+      purchases,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages,
+      },
+    };
   }
 
   async restockVehicle(id: string, quantity: number): Promise<IVehicle> {

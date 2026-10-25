@@ -6,7 +6,8 @@ import { CatalogPage } from './pages/CatalogPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { AdminPage } from './pages/AdminPage';
-import { AdminRoute } from './components/auth/RouteGuards';
+import { PurchasesPage } from './pages/PurchasesPage';
+import { AdminRoute, ProtectedRoute } from './components/auth/RouteGuards';
 
 export const AppRoutes: React.FC = () => {
   return (
@@ -18,6 +19,15 @@ export const AppRoutes: React.FC = () => {
           <Route path="/catalog" element={<Navigate to="/" replace />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/purchases"
+            element={
+              <ProtectedRoute>
+                <PurchasesPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/my-purchases" element={<Navigate to="/purchases" replace />} />
           <Route
             path="/admin"
             element={

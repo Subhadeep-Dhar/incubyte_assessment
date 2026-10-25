@@ -23,6 +23,14 @@ router.get(
 // Public catalog listing
 router.get('/', validateRequest({ query: catalogQuerySchema }), vehicleController.getCatalog);
 
+// Authenticated user purchase history
+router.get(
+  '/purchases/me',
+  authenticateJwt,
+  validateRequest({ query: catalogQuerySchema }),
+  vehicleController.getMyPurchases,
+);
+
 // Public single vehicle detail
 router.get(
   '/:id',

@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { SearchFilterBar, FilterState } from '../components/catalog/SearchFilterBar';
 import { VehicleGrid } from '../components/catalog/VehicleGrid';
 import { VehicleDetailModal } from '../components/catalog/VehicleDetailModal';
+import { PurchaseSuccessModal } from '../components/common/PurchaseSuccessModal';
 import { Alert } from '../components/ui/Alert';
 import { Button } from '../components/ui/Button';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -41,6 +42,10 @@ export const CatalogPage: React.FC = () => {
 
   // In-flight purchase tracking
   const [purchasingId, setPurchasingId] = useState<string | null>(null);
+
+  // Confirmed purchase success celebration modal
+  const [purchasedVehicle, setPurchasedVehicle] = useState<Vehicle | null>(null);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState<boolean>(false);
 
   const fetchInventory = useCallback(
     async (pageToFetch = currentPage, activeFilters = filters) => {
@@ -176,6 +181,8 @@ export const CatalogPage: React.FC = () => {
       setSuccessMessage(
         `Purchase successful! Congratulations on acquiring the ${vehicle.make} ${vehicle.model}.`,
       );
+      setPurchasedVehicle(vehicle);
+      setIsSuccessModalOpen(true);
     } catch (err) {
       if (err instanceof ApiClientError) {
         setError(err.message || 'Failed to complete vehicle purchase.');
@@ -298,6 +305,13 @@ export const CatalogPage: React.FC = () => {
           isPurchasing={purchasingId === selectedVehicle?._id}
           onClose={handleCloseModal}
           onPurchase={handlePurchase}
+        />
+
+        {/* Purchase Success Celebration Modal */}
+        <PurchaseSuccessModal
+          isOpen={isSuccessModalOpen}
+          vehicle={purchasedVehicle}
+          onClose={() => setIsSuccessModalOpen(false)}
         />
       </div>
     </div>

@@ -36,11 +36,22 @@ export interface User {
   updatedAt: string;
 }
 
+export interface PurchaseVehicleSnapshot {
+  make: string;
+  model: string;
+  year?: number;
+  category: VehicleCategory | string;
+  imageUrl?: string;
+  description?: string;
+}
+
 export interface Purchase {
   _id: string;
   userId: string;
-  vehicleId: string;
+  vehicleId: string | Vehicle;
+  vehicleDetails?: PurchaseVehicleSnapshot;
   priceAtPurchase: number;
+  quantity?: number;
   purchasedAt: string;
   createdAt: string;
   updatedAt: string;

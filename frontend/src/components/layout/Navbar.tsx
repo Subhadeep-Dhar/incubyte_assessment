@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { CarFront, ShieldCheck, UserRound, LogOut, LogIn } from 'lucide-react';
+import { CarFront, ShieldCheck, UserRound, LogOut, LogIn, ShoppingBag } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { Button } from '../ui/Button';
 
@@ -36,6 +36,21 @@ export const Navbar: React.FC = () => {
             <CarFront className="w-4 h-4 mr-1.5 shrink-0" aria-hidden="true" />
             <span>Inventory</span>
           </Link>
+
+          {isAuthenticated && (
+            <Link
+              to="/purchases"
+              data-testid="nav-my-purchases"
+              className={`inline-flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                isActive('/purchases')
+                  ? 'text-forest-700 bg-forest-50'
+                  : 'text-charcoal-secondary hover:text-charcoal-primary hover:bg-surface-muted'
+              }`}
+            >
+              <ShoppingBag className="w-4 h-4 mr-1.5 shrink-0" aria-hidden="true" />
+              <span>My Purchases</span>
+            </Link>
+          )}
 
           {isAdmin && (
             <Link

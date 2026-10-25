@@ -163,6 +163,9 @@ describe('CatalogPage (Catalog, Search & Purchasing Flow Integration Test)', () 
     });
 
     expect(await screen.findByText(/purchase successful/i)).toBeInTheDocument();
+    expect(await screen.findByTestId('purchase-success-modal')).toBeInTheDocument();
+    expect(screen.getByTestId('confetti-container')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /view my purchases/i })).toBeInTheDocument();
   });
 
   it('handles 409 Conflict out-of-stock response gracefully without breaking state', async () => {
@@ -187,6 +190,7 @@ describe('CatalogPage (Catalog, Search & Purchasing Flow Integration Test)', () 
     fireEvent.click(purchaseButtons[0]);
 
     expect(await screen.findByText(/the requested vehicle is out of stock/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('purchase-success-modal')).not.toBeInTheDocument();
   });
 
   it('renders empty showroom with proper empty state when inventory contains zero vehicles', async () => {

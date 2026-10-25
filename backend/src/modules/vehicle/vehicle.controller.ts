@@ -127,6 +127,35 @@ export class VehicleController {
       next(error);
     }
   }
+
+  async getMyPurchases(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          error: {
+            code: 'UNAUTHORIZED',
+            message: 'Authentication required',
+          },
+        });
+        return;
+      }
+
+      const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
+      const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 10;
+
+      const result = await vehicleService.getUserPurchases(userId, { page, limit });
+
+      res.status(200).json({
+        success: true,
+        data: result.purchases,
+        pagination: result.pagination,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export const vehicleController = new VehicleController();
